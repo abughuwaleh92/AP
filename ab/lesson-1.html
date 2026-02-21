@@ -33,15 +33,30 @@
     --line:rgba(15,23,42,.12);
     --shadow:0 16px 44px rgba(2,6,23,.16);
   }
+
   html,body{background:#111827;}
   #slides{box-shadow:var(--shadow); border-radius:22px;}
-  .slide{align-items:stretch !important; text-align:left !important; justify-content:flex-start !important; gap:14px;}
-  .slide.center{align-items:center !important; text-align:center !important; justify-content:center !important;}
+
+  /* Default slide layout: “page-like” */
+  .slide{
+    align-items:stretch !important;
+    text-align:left !important;
+    justify-content:flex-start !important;
+    gap:14px;
+  }
+  .slide.center{
+    align-items:center !important;
+    text-align:center !important;
+    justify-content:center !important;
+  }
+
   h1,h2,h3{font-family:Poppins,Inter,system-ui}
   .titleGlow{text-shadow:0 10px 30px rgba(0,0,0,.35);}
+
   .wrap{width:100%; max-width:1180px; margin:0 auto;}
   .twoCol{display:grid; grid-template-columns:1fr; gap:14px}
   @media (min-width:980px){.twoCol{grid-template-columns:1fr 1fr}}
+
   .card{
     background: linear-gradient(180deg,#fff 0%,#fbfbfb 100%);
     border:1px solid var(--line);
@@ -63,7 +78,9 @@
     font-weight:800;
   }
   .soft{color:var(--muted)}
+  .small{font-size:.95rem}
   .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
   .btn{
     border:1px solid var(--line);
     background:#fff;
@@ -71,7 +88,7 @@
     border-radius:999px;
     padding:.55rem 1rem;
     cursor:pointer;
-    transition:transform .12s ease, filter .12s ease;
+    transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
   }
   .btn:hover{filter:brightness(.985); transform: translateY(-1px);}
   .btn.primary{
@@ -84,6 +101,7 @@
     border-color: rgba(0,0,0,.0);
     color: var(--primary);
   }
+
   .badge{
     display:inline-flex; align-items:center; gap:.45rem;
     border-radius:999px; padding:.25rem .6rem; font-size:.85rem;
@@ -108,7 +126,7 @@
   }
 
   .scrollbox{
-    max-height:160px;
+    max-height:170px;
     overflow:auto;
     border:1px dashed rgba(108,29,69,.25);
     border-radius:14px;
@@ -127,162 +145,274 @@
     color:var(--primary);
   }
 
-  .imgFrame{
-    border:1px dashed rgba(108,29,69,.35);
-    border-radius:16px;
-    padding:10px;
-    background: rgba(199,163,79,.08);
-    min-height:170px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    color: var(--primary);
-    font-weight:900;
+  /* Cover slide background image support */
+  .cover{
+    position:relative;
+    color:#fff;
+    overflow:hidden;
   }
-  .imgFrame small{display:block; font-weight:700; color: var(--muted); margin-top:6px}
+  .cover::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: var(--coverImg, none);
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.05) contrast(1.05) brightness(.75);
+    transform: scale(1.02);
+  }
+  .cover::after{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(17,24,39,.35), rgba(17,24,39,.78));
+  }
+  .cover .content{
+    position:relative;
+    z-index:2;
+  }
+
+  /* Timer panel */
+  #timerPanel{
+    position:fixed;
+    top:14px;
+    left:14px;
+    z-index:80;
+    width:min(360px, 92vw);
+    display:none;
+    background:rgba(255,255,255,.95);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 14px 36px rgba(2,6,23,.18);
+    padding:10px 12px;
+  }
+  #timerPanel .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+  #timerTime{font-size:1.6rem; font-weight:1000; color:var(--primary)}
+  #timerLabel{font-weight:900; color:var(--muted)}
+  #timerPanel .btn{padding:.45rem .8rem}
+  #timerMiniHint{
+    position:fixed;
+    top:14px; left:14px;
+    z-index:79;
+    display:block;
+    background:rgba(0,0,0,.38);
+    color:#fff;
+    padding:.28rem .55rem;
+    border-radius:10px;
+    font-weight:900;
+    font-size:.82rem;
+  }
 </style>
 </head>
 
 <body>
 
+<div id="timerMiniHint">Timer: press <b>T</b></div>
+
+<div id="timerPanel" role="dialog" aria-label="Lesson timer">
+  <div class="row">
+    <div>
+      <div id="timerLabel">Slide timer</div>
+      <div id="timerTime">00:00</div>
+    </div>
+    <div class="flex gap-2 flex-wrap justify-end">
+      <button class="btn" id="timerLoad">Load slide mins</button>
+      <button class="btn primary" id="timerStart">Start</button>
+      <button class="btn" id="timerPause">Pause</button>
+      <button class="btn" id="timerReset">Reset</button>
+    </div>
+  </div>
+  <div class="mt-2 flex items-center gap-2 flex-wrap">
+    <span class="badge">Minutes</span>
+    <input id="timerMins" class="border rounded px-2 py-1 w-24" value="5">
+    <span class="soft small">Tip: each slide has a default time; “Load slide mins” uses it.</span>
+  </div>
+</div>
+
 <div id="deck" aria-live="polite">
   <div id="slides" class="relative">
+
     <div id="fsHint">Press <strong>F</strong> for fullscreen</div>
 
-    <!-- 0 • Title -->
-    <section class="slide center bg-primary text-white">
-      <div class="wrap">
-        <div class="w-full h-16 banner mb-6 rounded-md" id="bannerTop" aria-label="Banner"></div>
+    <!-- 0 • COVER (5 min setup / norms) -->
+    <section class="slide center cover" id="coverSlide" data-min="5">
+      <div class="wrap content">
+        <div class="w-full h-16 mb-6 rounded-md" id="bannerTop" aria-label="Banner"></div>
 
         <div class="flex items-center gap-6 justify-center">
           <img id="logoTop" alt="Logo" class="h-16 w-auto" onerror="this.style.display='none'"/>
           <div>
             <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight titleGlow">Topic 1.1</h1>
             <p class="text-accent text-2xl md:text-3xl mt-2 font-semibold">
-              Can Change Occur at an Instant?
+              Introducing Calculus: Can Change Occur at an Instant?
             </p>
             <p class="mt-2 text-lg" id="brandLine"></p>
           </div>
         </div>
 
-        <div class="mt-6 flex flex-wrap gap-3 justify-center text-sm">
-          <span class="pill">Student-centered exploration</span>
-          <span class="pill">Graph + table + reasoning</span>
-          <span class="pill">AP-style questions (original)</span>
-          <span class="pill">Exports: CSV/JSON</span>
+        <div class="mt-5 flex flex-wrap gap-3 justify-center text-sm">
+          <span class="pill">Student-centered</span>
+          <span class="pill">Interactive lab</span>
+          <span class="pill">AP-style MCQ + FRQ (original)</span>
+          <span class="pill">2 class periods (~90 min)</span>
         </div>
 
-        <div class="mt-5 text-sm text-gray-100">
-          Suggested pacing: <b>~2 class periods</b> (about 90 minutes total) :contentReference[oaicite:1]{index=1}
+        <div class="mt-6 callout text-left text-lg">
+          <b>Essential Question:</b> How can we define and estimate “instantaneous rate of change” using averages over tiny intervals?
+          <div class="soft mt-2 small">
+            Official pacing for Topic 1.1 is shown as <b>2 class periods</b> in Course at a Glance (based on 45-minute class periods). :contentReference[oaicite:1]{index=1}
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-100">
+          Navigation: <b>←</b>/<b>→</b> • Fullscreen: <b>F</b> • Timer: <b>T</b>
         </div>
       </div>
     </section>
 
-    <!-- 1 • Essential question + quickwrite -->
-    <section class="slide">
+    <!-- 1 • Pacing Map (3 min) -->
+    <section class="slide" data-min="3">
       <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">Warm-Up: “Instant” vs “Average”</h2>
+        <h2 class="text-4xl font-extrabold text-primary">Today’s Plan (90 minutes total)</h2>
         <div class="soft text-lg">
-          In AP Calculus, we don’t start with rules — we start with meaning. Today’s core question:
-        </div>
-
-        <div class="callout mt-3 text-xl">
-          <b>Essential Question:</b> Can change occur at an instant? If yes, how can we measure it? :contentReference[oaicite:2]{index=2}
+          Built for <b>2 class periods</b> (45 + 45), matching the suggested pacing. :contentReference[oaicite:2]{index=2}
         </div>
 
         <div class="twoCol mt-3">
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Real-life hook (add your image)</h3>
-            <div class="imgFrame">
-              Add image: “speedometer / motion sensor / water tank level / population over time”
-              <small>(You can replace this box later with an image.)</small>
-            </div>
-            <div class="mt-3 soft text-lg">
-              In real life, “instantaneous” is not measured by freezing time — it’s inferred from nearby measurements.
-            </div>
+            <h3 class="text-2xl font-bold text-primary mb-2">Day 1 (45 minutes)</h3>
+            <table class="clean">
+              <thead><tr><th>Time</th><th>Activity</th><th>Student job</th></tr></thead>
+              <tbody>
+                <tr><td>0–6</td><td>Do Now: average vs instant</td><td>Predict + justify</td></tr>
+                <tr><td>6–12</td><td>Meaning of average rate</td><td>Units + interpretation</td></tr>
+                <tr><td>12–30</td><td>Interactive Lab: shrinking intervals</td><td>Collect evidence, make claim</td></tr>
+                <tr><td>30–40</td><td>Representations match (gallery)</td><td>Match statements ↔ graphs/tables</td></tr>
+                <tr><td>40–45</td><td>Exit ticket</td><td>Write a precise definition-in-words</td></tr>
+              </tbody>
+            </table>
           </div>
 
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Quickwrite (3 minutes)</h3>
-            <div class="scrollbox">
-              <span class="scrollHint">Write</span>
-              <div class="text-lg">
-                Write 3–5 sentences answering:
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                  <li>What does “average speed” mean?</li>
-                  <li>What do you think “instantaneous speed” means?</li>
-                  <li>How could you estimate it if you only have position data?</li>
-                </ul>
-              </div>
-            </div>
+            <h3 class="text-2xl font-bold text-primary mb-2">Day 2 (45 minutes)</h3>
+            <table class="clean">
+              <thead><tr><th>Time</th><th>Activity</th><th>Student job</th></tr></thead>
+              <tbody>
+                <tr><td>0–7</td><td>Warm-up quiz</td><td>Retrieve + explain</td></tr>
+                <tr><td>7–27</td><td>AP-style MCQ set</td><td>Select + analyze distractors</td></tr>
+                <tr><td>27–42</td><td>Mini-FRQ (table → estimate → interpret)</td><td>Show setup + units + sentence</td></tr>
+                <tr><td>42–45</td><td>Exit ticket + export</td><td>Reflect + save your work</td></tr>
+              </tbody>
+            </table>
 
-            <div class="mt-3 callout text-lg">
-              <b>Partner share (2 minutes):</b> swap your best sentence. Try to make it more precise.
-            </div>
-
-            <div class="mt-3 text-sm soft">
-              Skill focus today: connect representations (verbal ↔ numerical ↔ graphical). :contentReference[oaicite:3]{index=3}
+            <div class="callout mt-3 text-lg">
+              <b>Norm:</b> You will talk more than the teacher today. Your evidence (tables/graphs) is your voice.
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 2 • Big idea: Average rate of change -->
-    <section class="slide">
+    <!-- 2 • Do Now (6 min) -->
+    <section class="slide" data-min="6">
       <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">Average Rate of Change (The “Near” Tool)</h2>
+        <h2 class="text-4xl font-extrabold text-primary">Do Now (6 min): Average vs Instant</h2>
+        <div class="soft text-lg">Answer first. Then justify. No calculators needed.</div>
 
         <div class="twoCol mt-3">
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Definition (in student language)</h3>
+            <h3 class="text-2xl font-bold text-primary mb-2">Prompt A (individual)</h3>
             <div class="callout text-lg">
-              Average rate of change from \\(t=a\\) to \\(t=b\\) is
+              A car travels 180 meters in 12 seconds. The <b>average</b> speed is:
+            </div>
+            <div class="mt-3 space-y-2 text-lg">
+              <label class="block"><input type="radio" name="dnA" value="A"> 12 m/s</label>
+              <label class="block"><input type="radio" name="dnA" value="B"> 15 m/s</label>
+              <label class="block"><input type="radio" name="dnA" value="C"> 180 m/s</label>
+              <label class="block"><input type="radio" name="dnA" value="D"> Cannot be determined</label>
+            </div>
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <button class="btn primary" id="dnACheck">Check</button>
+              <button class="btn" id="dnAReveal">Reveal</button>
+            </div>
+            <div id="dnAFb" class="mt-2 font-extrabold"></div>
+            <div id="dnAExp" class="mt-2"></div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Prompt B (pair)</h3>
+            <div class="callout text-lg">
+              Which statement is <b>most accurate</b>?
+            </div>
+            <div class="mt-3 space-y-2 text-lg">
+              <label class="block"><input type="radio" name="dnB" value="A"> “Instantaneous speed is just average speed.”</label>
+              <label class="block"><input type="radio" name="dnB" value="B"> “Instantaneous speed is average speed over a tiny interval.”</label>
+              <label class="block"><input type="radio" name="dnB" value="C"> “Instantaneous speed is the same as position.”</label>
+              <label class="block"><input type="radio" name="dnB" value="D"> “Instantaneous speed can’t exist because time can’t stop.”</label>
+            </div>
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <button class="btn primary" id="dnBCheck">Check</button>
+              <button class="btn" id="dnBReveal">Reveal</button>
+            </div>
+            <div id="dnBFb" class="mt-2 font-extrabold"></div>
+            <div id="dnBExp" class="mt-2"></div>
+
+            <div class="callout mt-4 text-lg">
+              <b>Talk move:</b> “I agree/disagree because…” (Give a reason, not a vibe.)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 • Average Rate meaning (6 min) -->
+    <section class="slide" data-min="6">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Mini-Lesson (6 min): The “Average Rate” Tool</h2>
+        <div class="soft text-lg">We’ll use this tool and then push it to its limit.</div>
+
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Core idea</h3>
+            <div class="callout text-lg">
+              Average rate of change from \\(t=a\\) to \\(t=b\\):
               \\[
                 \\frac{s(b)-s(a)}{b-a}.
               \\]
-              It measures “how much per unit time” over an interval.
+              Units: \\(\\frac{\\text{output units}}{\\text{input units}}\\).
             </div>
-
             <div class="mt-3 text-lg">
-              <b>Key catch:</b> if \\(b=a\\), then the denominator is 0, so the average rate of change is <b>undefined</b> at a single point. :contentReference[oaicite:4]{index=4}
-            </div>
-
-            <div class="mt-3 callout text-lg">
-              So… how do we talk about change <i>at</i> an instant?<br>
-              We look at average change over intervals that <b>shrink</b> around that instant. :contentReference[oaicite:5]{index=5}
+              If \\(b=a\\), then \\(b-a=0\\), so the average rate is <b>undefined</b> “at a point.”
+              <div class="soft mt-2">That’s the problem calculus solves using the limit idea.</div>
             </div>
           </div>
 
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Student task (Think → Pair → Share)</h3>
+            <h3 class="text-2xl font-bold text-primary mb-2">Quick Practice (students lead)</h3>
             <div class="scrollbox">
-              <span class="scrollHint">Discuss</span>
+              <span class="scrollHint">Do</span>
               <div class="text-lg">
-                Suppose a position function is \\(s(t)\\) (meters) and time \\(t\\) is in seconds.
+                A water tank has volume \\(V(t)\\) liters at time \\(t\\) minutes.
                 <ol class="list-decimal list-inside mt-2 space-y-1">
-                  <li>What are the units of \\(\\frac{s(b)-s(a)}{b-a}\\)?</li>
-                  <li>If the average rate from 2s to 6s is 3 m/s, what does that mean physically?</li>
-                  <li>How could you use average rates to estimate the speed at exactly 4s?</li>
+                  <li>What are the units of \\(\\frac{V(8)-V(2)}{8-2}\\)?</li>
+                  <li>If it equals \\(3\\), interpret it.</li>
+                  <li>How could you estimate the “rate at 5 minutes”?</li>
                 </ol>
               </div>
             </div>
 
-            <div class="mt-3 text-sm soft">
-              Goal: make a claim using precise units + meaning (AP habit).
+            <div class="callout mt-3 text-lg">
+              <b>Share:</b> One person explains units, one explains interpretation, one explains “how to estimate at a time.”
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3 • Interactive: Secant slope / average rate shrinking -->
-    <section class="slide">
+    <!-- 4 • Interactive Lab (18 min) -->
+    <section class="slide" data-min="18">
       <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">Interactive Lab: “Instant” from “Near”</h2>
+        <h2 class="text-4xl font-extrabold text-primary">Interactive Lab (18 min): “Instant” from “Near”</h2>
         <div class="soft text-lg">
-          We’ll model motion with \\(s(t)=t^2\\) (meters). Pick a time \\(t_0\\) and shrink the interval size \\(h\\).
+          We model position by \\(s(t)=t^2\\) (meters). You’ll estimate the “instantaneous rate” at \\(t=t_0\\) by shrinking \\(h\\).
         </div>
 
         <div class="twoCol mt-3">
@@ -294,8 +424,8 @@
                 <span class="badge"><b>h</b>: <span id="hOut" class="mono"></span></span>
               </div>
               <div class="left">
-                <button class="btn" id="hSmall">Make h smaller</button>
-                <button class="btn gold" id="resetLab">Reset</button>
+                <button class="btn" id="hSmaller">Make h smaller</button>
+                <button class="btn gold" id="labReset">Reset</button>
               </div>
             </div>
 
@@ -304,7 +434,7 @@
             <div class="gbar">
               <div class="left">
                 <label class="text-sm font-extrabold text-primary">Choose t₀</label>
-                <input id="t0" type="range" min="50" max="350" value="200">
+                <input id="t0" type="range" min="60" max="340" value="200">
                 <label class="text-sm font-extrabold text-primary">Choose h</label>
                 <input id="h" type="range" min="5" max="200" value="120">
               </div>
@@ -312,10 +442,10 @@
 
             <div class="gbar">
               <div class="left">
-                <span class="badge"><b>Avg rate</b> \\(\\frac{s(t_0+h)-s(t_0)}{h}\\): <span id="avgOut" class="mono"></span></span>
-                <span class="badge"><b>Prediction</b> for instant rate: <span id="predOut" class="mono">?</span></span>
+                <span class="badge"><b>Forward avg</b> \\(\\frac{s(t_0+h)-s(t_0)}{h}\\): <span id="avgFwdOut" class="mono"></span></span>
+                <span class="badge"><b>Symmetric avg</b> \\(\\frac{s(t_0+h)-s(t_0-h)}{2h}\\): <span id="avgSymOut" class="mono"></span></span>
               </div>
-              <span id="trendBadge" class="badge warn">Shrink h → observe</span>
+              <span id="stability" class="badge warn">Shrink h → look for stability</span>
             </div>
 
             <div class="mt-3 overflow-auto">
@@ -324,99 +454,245 @@
           </div>
 
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Your claim (AP-style sentence)</h3>
-            <div class="callout text-lg">
-              Fill this in and make it precise:
-              <div class="mt-2">
-                “As \\(h\\) gets closer to 0, the average rate of change approaches ______, so the instantaneous rate at \\(t_0\\) should be ______.”
-              </div>
-            </div>
+            <h3 class="text-2xl font-bold text-primary mb-2">Student tasks (do these in order)</h3>
 
-            <div class="mt-3 grid gap-2">
-              <div class="flex flex-wrap gap-2 items-center">
-                <span class="pill">Approaches</span>
-                <input id="approachVal" class="border rounded px-2 py-2 w-40" placeholder="number">
-                <button class="btn primary" id="checkClaim">Check</button>
-              </div>
-
-              <div id="claimFb" class="mt-2 font-extrabold"></div>
-
-              <div class="callout mt-3 text-lg">
-                <b>Teacher note:</b> Today we’re building the idea that calculus uses limits to define instantaneous rate of change from average rates. :contentReference[oaicite:6]{index=6}
-              </div>
-
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button class="btn" id="labCSV">Export CSV</button>
-                <button class="btn" id="labJSON">Export JSON</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 4 • Name it (without full limit formalism yet) -->
-    <section class="slide">
-      <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">So… what is “instantaneous rate”?</h2>
-
-        <div class="card p-5 mt-3">
-          <div class="callout text-lg">
-            Instantaneous rate of change at \\(t=t_0\\) is defined using a <b>limit of average rates</b>:
-            \\[
-              \\text{Instant rate at }t_0 \\;=\\; \\lim_{h\\to 0}\\frac{s(t_0+h)-s(t_0)}{h}.
-            \\]
-            This “limit idea” is what lets us talk about change <b>at an instant</b>. :contentReference[oaicite:7]{index=7}
-          </div>
-
-          <div class="twoCol mt-3">
-            <div class="card p-4">
-              <h3 class="text-xl font-bold text-primary mb-2">Mini-check (no calculator)</h3>
+            <div class="scrollbox">
+              <span class="scrollHint">Tasks</span>
               <div class="text-lg">
-                If \\(s(t)=t^2\\), and \\(t_0=3\\):
-                <ol class="list-decimal list-inside mt-2 space-y-1">
-                  <li>Compute the average rate from 3 to 5.</li>
-                  <li>Compute the average rate from 3 to 3.5.</li>
-                  <li>What number do these seem to approach?</li>
+                <ol class="list-decimal list-inside space-y-2">
+                  <li>Pick a value of \\(t_0\\). Keep it fixed.</li>
+                  <li>Record the symmetric average rate for \\(h=1,0.5,0.2,0.1,0.05\\).</li>
+                  <li>Write a claim: “As \\(h\\to 0\\), the average rate approaches ____.”</li>
+                  <li>Explain what that number means <b>in context</b> (units + sentence).</li>
                 </ol>
               </div>
             </div>
 
-            <div class="card p-4">
-              <h3 class="text-xl font-bold text-primary mb-2">Communication (AP habit)</h3>
-              <div class="callout text-lg">
-                Always include:
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                  <li>an expression (setup)</li>
-                  <li>a value (answer)</li>
-                  <li>units (meaning)</li>
-                </ul>
+            <div class="callout mt-3 text-lg">
+              <b>AP habit:</b> your conclusion must match your evidence (table).
+            </div>
+
+            <div class="mt-3">
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">Your “approaches” value</span>
+                <input id="approach" class="border rounded px-2 py-2 w-40" placeholder="number">
+                <button class="btn primary" id="approachCheck">Check</button>
               </div>
-              <div class="mt-2 text-sm soft">
-                This is exactly how AP free-response earns points.
-              </div>
+              <div id="approachFb" class="mt-2 font-extrabold"></div>
+            </div>
+
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <button class="btn" id="labCSV">Export CSV</button>
+              <button class="btn" id="labJSON">Export JSON</button>
+            </div>
+
+            <div class="callout mt-4 text-lg">
+              We’re building the official idea: instantaneous rate is defined using limits of average rates near that instant. :contentReference[oaicite:3]{index=3}
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- 5 • AP-style: table-based instantaneous approximation -->
-    <section class="slide">
+    <!-- 5 • Representations Match (10 min) -->
+    <section class="slide" data-min="10">
       <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">AP-Style Practice (Original)</h2>
-        <div class="soft text-lg">These are AP-style in structure (table → estimate → interpret), but written fresh.</div>
+        <h2 class="text-4xl font-extrabold text-primary">Gallery Match (10 min): Same Idea, Different Formats</h2>
+        <div class="soft text-lg">Match each statement to the best representation. Then justify.</div>
 
         <div class="twoCol mt-3">
           <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">Mini-FRQ (calculator allowed style)</h3>
+            <h3 class="text-2xl font-bold text-primary mb-2">Statements</h3>
+            <div class="scrollbox">
+              <span class="scrollHint">Read</span>
+              <div class="text-lg space-y-2">
+                <div><b>S1.</b> “The speed at \\(t=2\\) is about 4 m/s.”</div>
+                <div><b>S2.</b> “The average speed from \\(t=2\\) to \\(t=3\\) is 5 m/s.”</div>
+                <div><b>S3.</b> “As the interval shrinks, the average rates settle near one number.”</div>
+                <div><b>S4.</b> “Using a symmetric difference gives a better local estimate.”</div>
+                <div><b>S5.</b> “A single quotient over a wide interval is not ‘instantaneous.’”</div>
+              </div>
+            </div>
+
+            <div class="callout mt-3 text-lg">
+              Choose your matches on the right, then click check.
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Pick the best match</h3>
+
+            <div class="grid gap-3 text-lg">
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">S1 →</span>
+                <select id="m1" class="border rounded px-2 py-2">
+                  <option value="">Select…</option>
+                  <option value="A">A: Tiny-interval table near t=2</option>
+                  <option value="B">B: Wide interval [2,3] average</option>
+                  <option value="C">C: Statement about symmetric vs forward</option>
+                  <option value="D">D: “limit of averages” idea</option>
+                  <option value="E">E: Warning about wide intervals</option>
+                </select>
+              </div>
+
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">S2 →</span>
+                <select id="m2" class="border rounded px-2 py-2">
+                  <option value="">Select…</option>
+                  <option value="A">A: Tiny-interval table near t=2</option>
+                  <option value="B">B: Wide interval [2,3] average</option>
+                  <option value="C">C: Statement about symmetric vs forward</option>
+                  <option value="D">D: “limit of averages” idea</option>
+                  <option value="E">E: Warning about wide intervals</option>
+                </select>
+              </div>
+
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">S3 →</span>
+                <select id="m3" class="border rounded px-2 py-2">
+                  <option value="">Select…</option>
+                  <option value="A">A: Tiny-interval table near t=2</option>
+                  <option value="B">B: Wide interval [2,3] average</option>
+                  <option value="C">C: Statement about symmetric vs forward</option>
+                  <option value="D">D: “limit of averages” idea</option>
+                  <option value="E">E: Warning about wide intervals</option>
+                </select>
+              </div>
+
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">S4 →</span>
+                <select id="m4" class="border rounded px-2 py-2">
+                  <option value="">Select…</option>
+                  <option value="A">A: Tiny-interval table near t=2</option>
+                  <option value="B">B: Wide interval [2,3] average</option>
+                  <option value="C">C: Statement about symmetric vs forward</option>
+                  <option value="D">D: “limit of averages” idea</option>
+                  <option value="E">E: Warning about wide intervals</option>
+                </select>
+              </div>
+
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">S5 →</span>
+                <select id="m5" class="border rounded px-2 py-2">
+                  <option value="">Select…</option>
+                  <option value="A">A: Tiny-interval table near t=2</option>
+                  <option value="B">B: Wide interval [2,3] average</option>
+                  <option value="C">C: Statement about symmetric vs forward</option>
+                  <option value="D">D: “limit of averages” idea</option>
+                  <option value="E">E: Warning about wide intervals</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <button class="btn primary" id="matchCheck">Check</button>
+              <button class="btn" id="matchReveal">Reveal</button>
+            </div>
+
+            <div id="matchFb" class="mt-2 font-extrabold"></div>
+            <div id="matchAns" class="mt-2"></div>
+
+            <label class="block mt-3 text-sm font-extrabold text-primary">Justification (2 sentences)</label>
+            <textarea id="matchWhy" class="w-full border rounded p-2" rows="3"
+              placeholder="I matched S__ to __ because it describes ... and the evidence shows ..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 • Day 1 Exit (5 min) -->
+    <section class="slide" data-min="5">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Day 1 Exit Ticket (5 min)</h2>
+        <div class="card p-5 mt-3">
+          <label class="block text-sm font-extrabold text-primary">
+            1) In your own words: why can’t average rate of change be computed “at an instant” using \\(\\frac{s(b)-s(a)}{b-a}\\)?
+          </label>
+          <textarea id="d1e1" class="w-full border rounded p-2" rows="2"></textarea>
+
+          <label class="block text-sm font-extrabold text-primary mt-3">
+            2) How does shrinking the interval help?
+          </label>
+          <textarea id="d1e2" class="w-full border rounded p-2" rows="2"></textarea>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="btn" id="d1CSV">Export CSV</button>
+            <button class="btn" id="d1JSON">Export JSON</button>
+          </div>
+
+          <div class="callout mt-4 text-lg">
+            Tomorrow: you’ll start seeing the word <b>limit</b> and the notation that matches what you already did with tables.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 • Day 2 Warm-up Quiz (7 min) -->
+    <section class="slide" data-min="7">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Day 2 Warm-Up (7 min): Retrieval + Reasoning</h2>
+        <div class="soft text-lg">Pick answers, then explain one choice to a partner.</div>
+
+        <div class="card p-5 mt-3">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <div class="pill">5 quick MCQ</div>
+            <div class="flex gap-2 flex-wrap">
+              <button class="btn" id="wuNew">New quiz</button>
+              <button class="btn primary" id="wuCheck">Check</button>
+            </div>
+          </div>
+
+          <div id="wuList" class="grid md:grid-cols-2 gap-3 mt-3"></div>
+          <div id="wuFb" class="mt-2 font-extrabold"></div>
+
+          <div class="callout mt-3 text-lg">
+            <b>Partner move:</b> explain why one wrong option is tempting (distractor analysis).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 • AP-style MCQ set (20 min) -->
+    <section class="slide" data-min="20">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">AP-Style MCQ (20 min): Evidence → Claim</h2>
+        <div class="soft text-lg">Original AP-style questions (not copied). Focus: average vs instantaneous + interpreting quotients.</div>
+
+        <div class="card p-5 mt-3">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <div class="pill">8 questions • score + explanations</div>
+            <div class="flex gap-2 flex-wrap">
+              <button class="btn" id="mcNew">New set</button>
+              <button class="btn primary" id="mcCheck">Check</button>
+              <button class="btn" id="mcCSV">CSV</button>
+              <button class="btn" id="mcJSON">JSON</button>
+            </div>
+          </div>
+
+          <div id="mcList" class="grid md:grid-cols-2 gap-3 mt-3"></div>
+          <div id="mcFb" class="mt-2 font-extrabold"></div>
+
+          <div class="callout mt-3 text-lg">
+            <b>Rule:</b> You may not say “it’s obvious.” You must say what the expression <i>represents</i>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 • Mini-FRQ (15 min) -->
+    <section class="slide" data-min="15">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Mini-FRQ (15 min): Table → Estimate → Interpret</h2>
+        <div class="soft text-lg">Write like AP: setup, value, units, interpretation.</div>
+
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Problem (original)</h3>
 
             <div class="scrollbox">
               <span class="scrollHint">Scroll ↕</span>
               <div class="text-lg">
-                A particle’s position is given at selected times. The table shows \\(t\\) (seconds) and \\(s(t)\\) (meters).
+                A particle’s position is measured at times near \\(t=3\\). The table shows \\(t\\) (seconds) and \\(s(t)\\) (meters).
                 <div class="mt-2 overflow-auto">
                   <table class="clean">
                     <thead><tr><th>t</th><th>2.8</th><th>2.9</th><th>3.0</th><th>3.1</th><th>3.2</th></tr></thead>
@@ -424,28 +700,45 @@
                   </table>
                 </div>
                 <ol class="list-decimal list-inside mt-3 space-y-1">
-                  <li>Estimate \\(s'(3)\\) using a symmetric difference quotient. Show your setup.</li>
-                  <li>State units for \\(s'(3)\\) and interpret your answer in context.</li>
+                  <li>Estimate \\(s'(3)\\) using a <b>symmetric difference quotient</b>. Show your setup.</li>
+                  <li>State units for \\(s'(3)\\) and interpret the meaning.</li>
+                  <li>Explain briefly why using \\([2.8,3.2]\\) is not automatically “instantaneous.”</li>
                 </ol>
               </div>
             </div>
 
-            <div class="mt-3 grid gap-2">
+            <div class="callout mt-3 text-lg">
+              Hint: symmetric uses values equally spaced around 3, like \\(2.9\\) and \\(3.1\\).
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Your response</h3>
+
+            <div class="grid gap-2">
               <div class="flex flex-wrap gap-2 items-center">
                 <span class="pill">Setup</span>
-                <input id="frSetup" class="border rounded px-2 py-2 flex-1" placeholder="e.g., (s(3.1)-s(2.9))/(3.1-2.9)">
+                <input id="frSetup" class="border rounded px-2 py-2 flex-1"
+                  placeholder="(s(3.1)-s(2.9))/(3.1-2.9)"/>
               </div>
+
               <div class="flex flex-wrap gap-2 items-center">
                 <span class="pill">Estimate</span>
-                <input id="frVal" class="border rounded px-2 py-2 w-40" placeholder="number">
+                <input id="frVal" class="border rounded px-2 py-2 w-36" placeholder="number">
                 <span class="pill">Units</span>
-                <input id="frUnits" class="border rounded px-2 py-2 w-40" placeholder="m/s">
+                <input id="frUnits" class="border rounded px-2 py-2 w-28" placeholder="m/s">
               </div>
-              <label class="block text-sm font-extrabold text-primary">Interpretation (1–2 sentences)</label>
-              <textarea id="frInterp" class="w-full border rounded p-2" rows="3" placeholder="At t=3 seconds, the particle's instantaneous ..."></textarea>
 
-              <div class="flex flex-wrap gap-2">
-                <button class="btn primary" id="frCheck">Check</button>
+              <label class="block text-sm font-extrabold text-primary">Interpretation (1 sentence)</label>
+              <textarea id="frInterp" class="w-full border rounded p-2" rows="2"
+                placeholder="At t=3 seconds, the particle's instantaneous ..."></textarea>
+
+              <label class="block text-sm font-extrabold text-primary">Part (c) explanation (1–2 sentences)</label>
+              <textarea id="frWhy" class="w-full border rounded p-2" rows="3"
+                placeholder="Using [2.8,3.2] gives an average over a wider interval ..."></textarea>
+
+              <div class="flex flex-wrap gap-2 mt-1">
+                <button class="btn primary" id="frCheck">Check numeric</button>
                 <button class="btn" id="frReveal">Reveal</button>
                 <button class="btn" id="frCSV">CSV</button>
                 <button class="btn" id="frJSON">JSON</button>
@@ -453,64 +746,39 @@
 
               <div id="frFb" class="mt-2 font-extrabold"></div>
               <div id="frAns" class="mt-2"></div>
-            </div>
-          </div>
 
-          <div class="card p-5">
-            <h3 class="text-2xl font-bold text-primary mb-2">MCQ: Distractor analysis</h3>
-            <div class="callout text-lg">
-              A student estimates the instantaneous rate at \\(t=3\\) using:
-              \\[
-                \\frac{s(3.2)-s(2.8)}{3.2-2.8}.
-              \\]
-              Which statement is most accurate?
-            </div>
-
-            <div class="mt-3 space-y-2 text-lg">
-              <label class="block"><input type="radio" name="mc1" value="A"> It is always the best estimate because it uses more data.</label>
-              <label class="block"><input type="radio" name="mc1" value="B"> It estimates the average rate on [2.8,3.2], not the instantaneous rate at 3.</label>
-              <label class="block"><input type="radio" name="mc1" value="C"> It equals the instantaneous rate at 3 because 3 is the midpoint.</label>
-              <label class="block"><input type="radio" name="mc1" value="D"> It is invalid because the denominator is negative.</label>
-            </div>
-
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button class="btn primary" id="mcCheck">Check</button>
-              <button class="btn" id="mcReveal">Reveal</button>
-            </div>
-
-            <div id="mcFb" class="mt-2 font-extrabold"></div>
-            <div id="mcAns" class="mt-2"></div>
-
-            <div class="callout mt-4 text-lg">
-              Key AP habit: identify what a quotient represents (average over an interval vs “instant”).
+              <div class="callout mt-3 text-lg">
+                Scoring mindset: correct setup + correct estimate + correct units + correct interpretation.
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 6 • Exit ticket -->
-    <section class="slide">
+    <!-- 10 • Final Exit + export (3 min) -->
+    <section class="slide" data-min="3">
       <div class="wrap">
-        <h2 class="text-4xl font-extrabold text-primary">Exit Ticket</h2>
+        <h2 class="text-4xl font-extrabold text-primary">Final Exit Ticket (3 min)</h2>
 
         <div class="card p-5 mt-3">
-          <label class="block text-sm font-extrabold text-primary">1) In your own words: why is the average rate of change “undefined” at a single point?</label>
-          <textarea id="e1" class="w-full border rounded p-2" rows="2"></textarea>
+          <label class="block text-sm font-extrabold text-primary">
+            1) Finish the sentence: “Instantaneous rate of change is defined as a ____ of average rates as the interval shrinks.”
+          </label>
+          <input id="fe1" class="w-full border rounded p-2" placeholder="one word">
 
-          <label class="block text-sm font-extrabold text-primary mt-3">2) How does the “limit idea” fix that problem?</label>
-          <textarea id="e2" class="w-full border rounded p-2" rows="2"></textarea>
-
-          <label class="block text-sm font-extrabold text-primary mt-3">3) One thing you feel confident about + one question you still have.</label>
-          <textarea id="e3" class="w-full border rounded p-2" rows="2"></textarea>
+          <label class="block text-sm font-extrabold text-primary mt-3">
+            2) What’s one “AP habit” you practiced today?
+          </label>
+          <textarea id="fe2" class="w-full border rounded p-2" rows="2"></textarea>
 
           <div class="mt-3 flex flex-wrap gap-2">
-            <button class="btn" id="eCSV">Export CSV</button>
-            <button class="btn" id="eJSON">Export JSON</button>
+            <button class="btn" id="feCSV">Export CSV</button>
+            <button class="btn" id="feJSON">Export JSON</button>
           </div>
 
           <div class="callout mt-4 text-lg">
-            Next topic: <b>1.2 Defining Limits and Using Limit Notation</b> (you’ll formalize the language you used today). :contentReference[oaicite:8]{index=8}
+            Next: Topic 1.2 (limit notation) — you’ll give symbols to the “approaches” idea you’ve already used.
           </div>
         </div>
       </div>
@@ -535,6 +803,16 @@
 </div>
 
 <script defer>
+/* =========================================================
+   ✅ LESSON SETTINGS (edit these)
+   ---------------------------------------------------------
+   1) Cover background image:
+      - Put an image in your repo, e.g. /assets/topic-1-1-cover.jpg
+      - Then set LESSON_COVER_IMAGE to "../assets/topic-1-1-cover.jpg"
+      - OR pass ?cover=URL in the address bar (URL-encoded).
+========================================================= */
+const LESSON_COVER_IMAGE = ""; // example: "../assets/topic-1-1-cover.jpg"
+
 /* ===================== Helpers ===================== */
 function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
 function nearly(a,b,eps=1e-3){ return Math.abs(a-b)<=eps; }
@@ -553,8 +831,12 @@ function fmt(v){
   if(!Number.isFinite(v)) return "DNE";
   return (Math.round(v*10000)/10000).toString();
 }
+function qs(name){
+  const u=new URL(window.location.href);
+  return u.searchParams.get(name);
+}
 
-/* ===================== Brand assets ===================== */
+/* ===================== Brand + cover image ===================== */
 function resolveAsset(p){
   if(!p) return "";
   if(/^https?:\/\//.test(p)) return p;
@@ -581,13 +863,123 @@ logo.src = resolveAsset(BRAND.logo || "assets/logo.svg");
   s.setProperty("--accent2", BRAND.colors.accent2 || "#E4D4A8");
 })();
 
+/* Cover image: query param beats constant; constant beats brand banner */
+(function setCover(){
+  const coverParam = qs("cover");
+  const cover = coverParam ? coverParam : (LESSON_COVER_IMAGE ? LESSON_COVER_IMAGE : (BRAND.banner || "assets/banner.jpg"));
+  const coverUrl = resolveAsset(cover);
+  document.getElementById("coverSlide").style.setProperty("--coverImg", `url('${coverUrl}')`);
+})();
+
 /* ===================== Deck init ===================== */
 const glossary = {
-  avg: "<strong>Average rate of change</strong>: change in output divided by change in input over an interval.",
-  inst: "<strong>Instantaneous rate</strong>: defined as a limit of average rates as the interval shrinks.",
-  units: "<strong>Units</strong>: output units divided by input units (e.g., meters per second)."
+  avg: "<strong>Average rate</strong>: \\(\\frac{\\Delta s}{\\Delta t}\\) over an interval.",
+  inst: "<strong>Instantaneous rate</strong>: defined as a <em>limit</em> of average rates as the interval shrinks.",
+  sym: "<strong>Symmetric difference</strong>: \\(\\frac{s(t+h)-s(t-h)}{2h}\\) uses data on both sides."
 };
-const Deck = window.DeckEngine.initDeck({ deckTitle:"AB_T1_1_InstantChange", glossary });
+const Deck = window.DeckEngine.initDeck({ deckTitle:"AB_Topic_1_1_InstantChange", glossary });
+
+/* ===================== Timer ===================== */
+let timer = { running:false, end:0, remain:0, t:null };
+const timerPanel = document.getElementById("timerPanel");
+const timerTime = document.getElementById("timerTime");
+const timerMins = document.getElementById("timerMins");
+
+function formatMMSS(ms){
+  const s=Math.max(0, Math.ceil(ms/1000));
+  const mm=Math.floor(s/60);
+  const ss=s%60;
+  return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+}
+function timerRender(){
+  timerTime.textContent = formatMMSS(timer.remain);
+}
+function timerTick(){
+  timer.remain = timer.end - Date.now();
+  if(timer.remain <= 0){
+    timer.remain = 0;
+    timer.running=false;
+    clearInterval(timer.t);
+    timer.t=null;
+    timerRender();
+    // tiny celebration if you want:
+    Deck.confetti();
+    return;
+  }
+  timerRender();
+}
+function timerStart(){
+  const mins = Number(timerMins.value);
+  if(!Number.isFinite(mins) || mins<=0) return;
+  timer.running=true;
+  timer.end = Date.now() + mins*60*1000;
+  timer.remain = mins*60*1000;
+  if(timer.t) clearInterval(timer.t);
+  timer.t=setInterval(timerTick, 250);
+  timerRender();
+}
+function timerPause(){
+  if(!timer.running) return;
+  timer.running=false;
+  clearInterval(timer.t);
+  timer.t=null;
+  // keep remaining as-is
+}
+function timerReset(){
+  timerPause();
+  timer.remain = Number(timerMins.value)*60*1000;
+  if(!Number.isFinite(timer.remain)) timer.remain=0;
+  timerRender();
+}
+function loadSlideMinutes(){
+  const slide = document.querySelector(".slide.active");
+  const mins = slide ? Number(slide.dataset.min || 5) : 5;
+  timerMins.value = mins;
+  timerReset();
+}
+document.getElementById("timerLoad").addEventListener("click", loadSlideMinutes);
+document.getElementById("timerStart").addEventListener("click", timerStart);
+document.getElementById("timerPause").addEventListener("click", timerPause);
+document.getElementById("timerReset").addEventListener("click", timerReset);
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key.toLowerCase()==="t"){
+    const shown = timerPanel.style.display==="block";
+    timerPanel.style.display = shown ? "none" : "block";
+    document.getElementById("timerMiniHint").style.display = shown ? "block" : "none";
+    if(!shown) loadSlideMinutes();
+  }
+});
+
+/* ===================== Do Now checks ===================== */
+function setFb(id, ok, msg){
+  const el=document.getElementById(id);
+  el.textContent = msg;
+  el.style.color = ok ? "#15803d" : "#b91c1c";
+  if(ok) Deck.confetti();
+}
+document.getElementById("dnACheck").addEventListener("click", ()=>{
+  const sel=(document.querySelector('input[name="dnA"]:checked')||{}).value;
+  if(!sel) return setFb("dnAFb", false, "Choose an option.");
+  setFb("dnAFb", sel==="B", sel==="B" ? "✅ Correct: 180/12 = 15 m/s." : "❌ Recheck: average = distance/time.");
+});
+document.getElementById("dnAReveal").addEventListener("click", ()=>{
+  const box=document.getElementById("dnAExp");
+  box.innerHTML = `<div class="callout text-lg">Average speed = \\(\\frac{180}{12}=15\\) m/s.</div>`;
+  Deck.renderMath(box);
+});
+document.getElementById("dnBCheck").addEventListener("click", ()=>{
+  const sel=(document.querySelector('input[name="dnB"]:checked')||{}).value;
+  if(!sel) return setFb("dnBFb", false, "Choose an option.");
+  setFb("dnBFb", sel==="B", sel==="B" ? "✅ Best answer: we estimate instant using averages over tiny intervals." : "❌ Not quite—instant is a limit idea, not “time stops.”");
+});
+document.getElementById("dnBReveal").addEventListener("click", ()=>{
+  const box=document.getElementById("dnBExp");
+  box.innerHTML = `<div class="callout text-lg">
+    “Instantaneous” is modeled by shrinking an interval around the time and looking at how the average rate behaves.
+  </div>`;
+  Deck.renderMath(box);
+});
 
 /* ===================== SVG toolkit ===================== */
 function svgEl(tag, attrs={}){
@@ -631,42 +1023,35 @@ function plot(svg,m,fn){
   svg.appendChild(svgEl("path",{d,fill:"none",stroke:"var(--primary)","stroke-width":"3","stroke-linecap":"round"}));
 }
 
-/* ===================== Interactive Lab ===================== */
+/* ===================== Lab ===================== */
 const labSvg = document.getElementById("labSvg");
 const t0 = document.getElementById("t0");
 const h = document.getElementById("h");
 const t0Out = document.getElementById("t0Out");
 const hOut = document.getElementById("hOut");
-const avgOut = document.getElementById("avgOut");
-const predOut = document.getElementById("predOut");
-const trendBadge = document.getElementById("trendBadge");
+const avgFwdOut = document.getElementById("avgFwdOut");
+const avgSymOut = document.getElementById("avgSymOut");
+const stability = document.getElementById("stability");
 const labTable = document.getElementById("labTable");
 
 function s(t){ return t*t; } // meters
-
-function renderLab(){
-  // map sliders to values
-  const t0v = Number(t0.value)/100;   // 0.5 .. 3.5
+function labRender(){
+  const t0v = Number(t0.value)/100;   // 0.60 .. 3.40
   const hv  = Number(h.value)/100;    // 0.05 .. 2.00
   t0Out.textContent = (Math.round(t0v*100)/100).toString();
   hOut.textContent  = (Math.round(hv*100)/100).toString();
 
-  // avg rate
-  const avg = (s(t0v+hv)-s(t0v))/hv;
-  avgOut.textContent = fmt(avg);
+  const fwd = (s(t0v+hv)-s(t0v))/hv;
+  const sym = (s(t0v+hv)-s(t0v-hv))/(2*hv);
+  avgFwdOut.textContent = fmt(fwd);
+  avgSymOut.textContent = fmt(sym);
 
-  // rough “prediction” via symmetric h/2
-  const hs = hv/2;
-  const sym = (s(t0v+hs)-s(t0v-hs))/(2*hs);
-  predOut.textContent = fmt(sym);
-
-  // draw graph
+  // graph
   labSvg.innerHTML="";
   const m = makeMapper(640,360, 0, 4, 0, 16);
   drawAxes(labSvg,m);
   plot(labSvg,m,s);
 
-  // points and secant
   const x1=t0v, y1=s(x1);
   const x2=t0v+hv, y2=s(x2);
   drawPoint(labSvg,m,x1,y1,{fill:"#111827",stroke:"#111827",r:6});
@@ -677,155 +1062,303 @@ function renderLab(){
     stroke:"var(--primary2)", "stroke-width":"3"
   }));
 
-  // trend badge
-  trendBadge.className = hv < 0.25 ? "badge ok" : "badge warn";
-  trendBadge.textContent = hv < 0.25 ? "Nice! h is small → instant estimate stabilizes" : "Shrink h → observe";
+  stability.className = hv <= 0.2 ? "badge ok" : "badge warn";
+  stability.textContent = hv <= 0.2 ? "Stabilizing: good local estimate" : "Shrink h → look for stability";
 
-  // table with multiple h values
-  const hsList = [1,0.5,0.2,0.1,0.05].filter(v=>v>=0.05);
-  let html = `<thead><tr><th>h</th><th>Avg rate (forward)</th><th>Avg rate (symmetric)</th></tr></thead><tbody>`;
-  for(const hv2 of hsList){
-    const fwd=(s(t0v+hv2)-s(t0v))/hv2;
-    const sym2=(s(t0v+hv2)-s(t0v-hv2))/(2*hv2);
-    html += `<tr><td>${hv2.toFixed(2)}</td><td>${fwd.toFixed(4)}</td><td>${sym2.toFixed(4)}</td></tr>`;
+  const hsList=[1,0.5,0.2,0.1,0.05];
+  let html = `<thead><tr><th>h</th><th>forward avg</th><th>symmetric avg</th></tr></thead><tbody>`;
+  for(const hh of hsList){
+    const f=(s(t0v+hh)-s(t0v))/hh;
+    const sy=(s(t0v+hh)-s(t0v-hh))/(2*hh);
+    html += `<tr><td>${hh.toFixed(2)}</td><td>${f.toFixed(4)}</td><td>${sy.toFixed(4)}</td></tr>`;
   }
   html += `</tbody>`;
   labTable.innerHTML = html;
 }
+t0.addEventListener("input", labRender);
+h.addEventListener("input", labRender);
 
-t0.addEventListener("input", renderLab);
-h.addEventListener("input", renderLab);
-
-document.getElementById("hSmall").addEventListener("click", ()=>{
+document.getElementById("hSmaller").addEventListener("click", ()=>{
   const cur = Number(h.value);
   h.value = Math.max(5, Math.floor(cur*0.7));
-  renderLab();
+  labRender();
 });
-document.getElementById("resetLab").addEventListener("click", ()=>{
-  t0.value=200; h.value=120; renderLab();
+document.getElementById("labReset").addEventListener("click", ()=>{
+  t0.value=200; h.value=120; labRender();
 });
 
-document.getElementById("checkClaim").addEventListener("click", ()=>{
+document.getElementById("approachCheck").addEventListener("click", ()=>{
   const t0v = Number(t0.value)/100;
-  const trueInst = 2*t0v; // derivative of t^2 is 2t
-  const user = Number(normalizeInput(document.getElementById("approachVal").value));
-  const fb = document.getElementById("claimFb");
+  const trueInst = 2*t0v; // derivative of t^2 is 2t (used only as feedback target)
+  const user = Number(normalizeInput(document.getElementById("approach").value));
+  const fb = document.getElementById("approachFb");
   if(!Number.isFinite(user)){
-    fb.textContent="Enter a number for your 'approaches' value.";
+    fb.textContent="Enter a number.";
     fb.style.color="#b91c1c";
     return;
   }
-  const ok = nearly(user, trueInst, 0.08);
-  fb.textContent = ok ? "✅ Strong! Your limit-based estimate matches the instantaneous rate." : "❌ Not quite—shrink h and compare your symmetric estimates.";
+  const ok = nearly(user, trueInst, 0.10);
+  fb.textContent = ok ? "✅ Nice: your estimate matches the instantaneous rate for this model." :
+    "❌ Not yet—use smaller h and trust the symmetric column’s stability.";
   fb.style.color = ok ? "#15803d" : "#b91c1c";
   if(ok) Deck.confetti();
 });
 
-/* Exports */
 document.getElementById("labCSV").addEventListener("click", ()=>{
   const t0v = Number(t0.value)/100;
-  const rows=[["t0","h","avg_forward","avg_symmetric"],];
-  const hsList=[1,0.5,0.2,0.1,0.05];
-  for(const hv2 of hsList){
-    const fwd=(s(t0v+hv2)-s(t0v))/hv2;
-    const sym2=(s(t0v+hv2)-s(t0v-hv2))/(2*hv2);
-    rows.push([t0v,hv2,fwd,sym2]);
+  const rows=[["t0","h","avg_forward","avg_symmetric"]];
+  for(const hh of [1,0.5,0.2,0.1,0.05]){
+    rows.push([t0v,hh,(s(t0v+hh)-s(t0v))/hh,(s(t0v+hh)-s(t0v-hh))/(2*hh)]);
   }
-  Deck.downloadCSV("AB_T1_1_instant_from_near.csv", rows);
+  Deck.downloadCSV("AB_topic_1_1_lab.csv", rows);
 });
 document.getElementById("labJSON").addEventListener("click", ()=>{
   const t0v = Number(t0.value)/100;
-  const hsList=[1,0.5,0.2,0.1,0.05];
-  const data=hsList.map(hv2=>({
-    t0:t0v,
-    h:hv2,
-    avg_forward:(s(t0v+hv2)-s(t0v))/hv2,
-    avg_symmetric:(s(t0v+hv2)-s(t0v-hv2))/(2*hv2)
+  const data=[1,0.5,0.2,0.1,0.05].map(hh=>({
+    t0:t0v, h:hh,
+    avg_forward:(s(t0v+hh)-s(t0v))/hh,
+    avg_symmetric:(s(t0v+hh)-s(t0v-hh))/(2*hh)
   }));
-  Deck.downloadJSON("AB_T1_1_instant_from_near.json", data);
+  Deck.downloadJSON("AB_topic_1_1_lab.json", data);
 });
 
-/* FRQ check */
+/* ===================== Matching activity ===================== */
+const truth = { m1:"A", m2:"B", m3:"D", m4:"C", m5:"E" };
+function matchScore(){
+  let ok=0;
+  for(const k of ["m1","m2","m3","m4","m5"]){
+    if(document.getElementById(k).value === truth[k]) ok++;
+  }
+  return ok;
+}
+document.getElementById("matchCheck").addEventListener("click", ()=>{
+  const ok = matchScore();
+  const fb=document.getElementById("matchFb");
+  fb.textContent = `Score: ${ok}/5`;
+  fb.style.color = ok===5 ? "#15803d" : "#9a3412";
+  if(ok===5) Deck.confetti();
+});
+document.getElementById("matchReveal").addEventListener("click", ()=>{
+  const box=document.getElementById("matchAns");
+  box.innerHTML = `<div class="callout text-lg">
+    Answers: S1→A, S2→B, S3→D, S4→C, S5→E.<br>
+    <span class="soft">Key: instantaneous is about <b>local</b> behavior; wide intervals give averages.</span>
+  </div>`;
+  Deck.renderMath(box);
+});
+
+/* ===================== Exports (Day 1 exit) ===================== */
+document.getElementById("d1CSV").addEventListener("click", ()=>{
+  Deck.downloadCSV("AB_topic_1_1_day1_exit.csv", [["Q1","Q2"],[
+    document.getElementById("d1e1").value||"",
+    document.getElementById("d1e2").value||""
+  ]]);
+});
+document.getElementById("d1JSON").addEventListener("click", ()=>{
+  Deck.downloadJSON("AB_topic_1_1_day1_exit.json", {
+    q1:document.getElementById("d1e1").value||"",
+    q2:document.getElementById("d1e2").value||""
+  });
+});
+
+/* ===================== Warm-up quiz bank ===================== */
+const wuBank = [
+  { stem:"Which expression is an <b>average</b> rate of change from \\(t=a\\) to \\(t=b\\)?",
+    choices:["\\(\\frac{s(b)-s(a)}{b-a}\\)","\\(\\frac{s(a)}{a}\\)","\\(s(a)-s(b)\\)","\\(s'(a)\\)"], ans:0,
+    exp:"Average rate = change in output over change in input." },
+  { stem:"Why is average rate “at a single point” undefined?",
+    choices:["Because the numerator is always 0","Because \\(b-a=0\\) would be division by zero","Because graphs can’t show points","Because units don’t exist"], ans:1,
+    exp:"At a point, the interval length is 0 → division by 0." },
+  { stem:"A symmetric estimate for \\(s'(3)\\) using \\(2.9\\) and \\(3.1\\) is:",
+    choices:["\\(\\frac{s(3.1)-s(2.9)}{0.2}\\)","\\(\\frac{s(3.1)-s(3)}{0.1}\\)","\\(\\frac{s(3)-s(2.9)}{0.1}\\)","\\(\\frac{s(3.2)-s(2.8)}{0.4}\\)"], ans:0,
+    exp:"Symmetric uses equal spacing around 3." },
+  { stem:"Which is best language for instantaneous rate?",
+    choices:["Average over a wide interval","Average over shrinking intervals approaching a point","The function value","A random guess"], ans:1,
+    exp:"Instant is modeled by shrinking intervals." },
+  { stem:"Units of \\(\\frac{V(8)-V(2)}{8-2}\\) if \\(V\\) is liters and \\(t\\) minutes?",
+    choices:["liters","minutes","liters/minute","minute/liter"], ans:2,
+    exp:"Output units divided by input units." }
+];
+let wuSet=[];
+function buildWU(){
+  wuSet = wuBank.slice().sort(()=>Math.random()-0.5).slice(0,5);
+  const box=document.getElementById("wuList");
+  box.innerHTML="";
+  wuSet.forEach((it,i)=>{
+    const d=document.createElement("div");
+    d.className="card p-4";
+    d.innerHTML = `
+      <div class="text-lg font-extrabold text-primary">Q${i+1}</div>
+      <div class="mt-2 text-lg">${it.stem}</div>
+      <div class="mt-2">
+        ${it.choices.map((c,idx)=>`<div><label><input type="radio" name="wu${i}" value="${idx}"> ${c}</label></div>`).join("")}
+      </div>
+      <div id="wuWhy${i}" class="mt-2 small mono"></div>
+    `;
+    box.appendChild(d);
+  });
+  Deck.renderMath(box);
+  document.getElementById("wuFb").textContent="";
+}
+buildWU();
+document.getElementById("wuNew").addEventListener("click", buildWU);
+document.getElementById("wuCheck").addEventListener("click", ()=>{
+  let ok=0;
+  wuSet.forEach((it,i)=>{
+    const sel=(document.querySelector(`input[name="wu${i}"]:checked`)||{}).value;
+    const why=document.getElementById(`wuWhy${i}`);
+    const good = String(sel)===String(it.ans);
+    why.textContent = (good?"✅ ":"❌ ") + it.exp;
+    why.style.color = good ? "#15803d" : "#b91c1c";
+    if(good) ok++;
+  });
+  const fb=document.getElementById("wuFb");
+  fb.textContent = `Score: ${ok}/${wuSet.length}`;
+  fb.style.color = ok===wuSet.length ? "#15803d" : "#9a3412";
+  if(ok===wuSet.length) Deck.confetti();
+});
+
+/* ===================== AP-style MCQ bank (original) ===================== */
+const mcBank = [
+  { stem:"Let \\(s(t)=t^2\\). Which quotient best estimates the instantaneous rate at \\(t=2\\)?",
+    choices:["\\(\\frac{s(3)-s(1)}{2}\\)","\\(\\frac{s(2.1)-s(1.9)}{0.2}\\)","\\(\\frac{s(4)-s(0)}{4}\\)","\\(s(2)\\)"], ans:1,
+    exp:"Use values close to 2 on both sides (symmetric is very local)." },
+  { stem:"A student computes \\(\\frac{s(3.2)-s(2.8)}{0.4}\\). What does it represent?",
+    choices:["Instantaneous rate at 3","Average rate on [2.8,3.2]","Position at 3","Always incorrect"], ans:1,
+    exp:"That quotient is an average rate over the interval." },
+  { stem:"If \\(V(t)\\) is volume (liters), which is a correct unit for \\(\\frac{V(6)-V(2)}{6-2}\\)?",
+    choices:["liters","minutes","liters/minute","minute/liter"], ans:2,
+    exp:"Rate = output per input." },
+  { stem:"Which statement is always true?",
+    choices:["Instantaneous rate equals average rate on any interval","Instantaneous rate uses a limit idea from shrinking intervals","Instantaneous rate is the same as the function value","Instantaneous rate cannot be estimated"], ans:1,
+    exp:"That’s the calculus idea behind ‘instant’." },
+  { stem:"Let \\(s(t)\\) be position. If \\(\\frac{s(5)-s(3)}{2}=4\\), interpret correctly.",
+    choices:["At t=4, speed is 4","From 3 to 5, average velocity is 4 units/s","Position at 4 is 4","Instantaneous velocity is 2"], ans:1,
+    exp:"Average over [3,5], not automatically instant at 4." },
+  { stem:"Which is a symmetric difference quotient for \\(s'(a)\\)?",
+    choices:["\\(\\frac{s(a+h)-s(a)}{h}\\)","\\(\\frac{s(a+h)-s(a-h)}{2h}\\)","\\(\\frac{s(a)-s(a-h)}{h}\\)","\\(\\frac{s(a)}{a}\\)"], ans:1,
+    exp:"Symmetric uses both sides around a." },
+  { stem:"Suppose average rates near \\(t=1\\) stabilize near 7. Best conclusion?",
+    choices:["\\(s(1)=7\\)","The instantaneous rate at 1 is about 7","The function is linear","The rate is undefined"], ans:1,
+    exp:"Stability of shrinking-interval averages supports an instantaneous estimate." },
+  { stem:"If the interval length shrinks to 0, the average rate formula becomes undefined because:",
+    choices:["The numerator becomes negative","You divide by 0","The graph disappears","Units change"], ans:1,
+    exp:"Division by 0." }
+];
+let mcSet=[];
+function buildMC(){
+  mcSet = mcBank.slice().sort(()=>Math.random()-0.5).slice(0,8);
+  const box=document.getElementById("mcList");
+  box.innerHTML="";
+  mcSet.forEach((it,i)=>{
+    const d=document.createElement("div");
+    d.className="card p-4";
+    d.innerHTML = `
+      <div class="text-lg font-extrabold text-primary">Q${i+1}</div>
+      <div class="mt-2 text-lg">${it.stem}</div>
+      <div class="mt-2">
+        ${it.choices.map((c,idx)=>`<div><label><input type="radio" name="mc${i}" value="${idx}"> ${c}</label></div>`).join("")}
+      </div>
+      <div id="mcWhy${i}" class="mt-2 small mono"></div>
+    `;
+    box.appendChild(d);
+  });
+  Deck.renderMath(box);
+  document.getElementById("mcFb").textContent="";
+}
+buildMC();
+document.getElementById("mcNew").addEventListener("click", buildMC);
+document.getElementById("mcCheck").addEventListener("click", ()=>{
+  let ok=0;
+  mcSet.forEach((it,i)=>{
+    const sel=(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value;
+    const why=document.getElementById(`mcWhy${i}`);
+    const good = String(sel)===String(it.ans);
+    why.textContent = (good?"✅ ":"❌ ") + it.exp;
+    why.style.color = good ? "#15803d" : "#b91c1c";
+    if(good) ok++;
+  });
+  const fb=document.getElementById("mcFb");
+  fb.textContent = ok===mcSet.length ? "✅ Perfect. Now explain one distractor." : `Score: ${ok}/${mcSet.length}`;
+  fb.style.color = ok===mcSet.length ? "#15803d" : "#9a3412";
+  if(ok===mcSet.length) Deck.confetti();
+});
+document.getElementById("mcCSV").addEventListener("click", ()=>{
+  const rows=[["stem","correctIndex","userIndex"]];
+  mcSet.forEach((it,i)=>{
+    const sel=(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value ?? "";
+    rows.push([it.stem,it.ans,sel]);
+  });
+  Deck.downloadCSV("AB_topic_1_1_mcq.csv", rows);
+});
+document.getElementById("mcJSON").addEventListener("click", ()=>{
+  const data=mcSet.map((it,i)=>({
+    item:it,
+    user:(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value ?? ""
+  }));
+  Deck.downloadJSON("AB_topic_1_1_mcq.json", data);
+});
+
+/* ===================== FRQ check ===================== */
 document.getElementById("frCheck").addEventListener("click", ()=>{
   const est = Number(normalizeInput(document.getElementById("frVal").value));
   const fb = document.getElementById("frFb");
-  // symmetric estimate using (s(3.1)-s(2.9))/(0.2) = (9.61-8.41)/0.2 = 6
+  // symmetric estimate: (9.61-8.41)/0.2 = 6
   const ok = Number.isFinite(est) && nearly(est, 6, 0.02);
-  fb.textContent = ok ? "✅ Estimate looks correct (6 m/s). Now make sure your interpretation uses units." : "❌ Re-check your symmetric difference quotient.";
+  fb.textContent = ok ? "✅ Numeric estimate looks correct (6 m/s). Now verify your units + interpretation." : "❌ Recheck: use (s(3.1)-s(2.9))/(3.1-2.9).";
   fb.style.color = ok ? "#15803d" : "#b91c1c";
   if(ok) Deck.confetti();
 });
 document.getElementById("frReveal").addEventListener("click", ()=>{
   const box = document.getElementById("frAns");
   box.innerHTML = `<div class="callout text-lg">
-    A symmetric difference quotient at 3 is
+    Symmetric estimate at 3:
     \\[
-      \\frac{s(3.1)-s(2.9)}{3.1-2.9}=\\frac{9.61-8.41}{0.2}=6.
+      \\frac{s(3.1)-s(2.9)}{3.1-2.9}=
+      \\frac{9.61-8.41}{0.2}=6.
     \\]
     Units: meters per second. Interpretation: at \\(t=3\\) s, the particle’s instantaneous velocity is about \\(6\\) m/s.
+    <div class="soft mt-2">Using \\([2.8,3.2]\\) gives an average over a wider interval, so it’s not automatically “instantaneous at 3.”</div>
   </div>`;
   Deck.renderMath(box);
 });
 document.getElementById("frCSV").addEventListener("click", ()=>{
-  const rows=[["setup","estimate","units","interpretation"],[
+  Deck.downloadCSV("AB_topic_1_1_minifrq.csv", [["setup","estimate","units","interpretation","why"],[
     document.getElementById("frSetup").value||"",
     document.getElementById("frVal").value||"",
     document.getElementById("frUnits").value||"",
-    document.getElementById("frInterp").value||""
-  ]];
-  Deck.downloadCSV("AB_T1_1_minifrq.csv", rows);
+    document.getElementById("frInterp").value||"",
+    document.getElementById("frWhy").value||""
+  ]]);
 });
 document.getElementById("frJSON").addEventListener("click", ()=>{
-  Deck.downloadJSON("AB_T1_1_minifrq.json", {
+  Deck.downloadJSON("AB_topic_1_1_minifrq.json", {
     setup:document.getElementById("frSetup").value||"",
     estimate:document.getElementById("frVal").value||"",
     units:document.getElementById("frUnits").value||"",
-    interpretation:document.getElementById("frInterp").value||""
+    interpretation:document.getElementById("frInterp").value||"",
+    why:document.getElementById("frWhy").value||""
   });
 });
 
-/* MCQ check */
-document.getElementById("mcCheck").addEventListener("click", ()=>{
-  const sel=(document.querySelector('input[name="mc1"]:checked')||{}).value;
-  const fb=document.getElementById("mcFb");
-  if(!sel){
-    fb.textContent="Choose an answer.";
-    fb.style.color="#b91c1c";
-    return;
-  }
-  const ok = (sel==="B");
-  fb.textContent = ok ? "✅ Correct. That quotient is an average on [2.8,3.2], not guaranteed to be the instant at 3." : "❌ Not quite. Ask: what interval does that quotient represent?";
-  fb.style.color = ok ? "#15803d" : "#b91c1c";
-  if(ok) Deck.confetti();
-});
-document.getElementById("mcReveal").addEventListener("click", ()=>{
-  const box=document.getElementById("mcAns");
-  box.innerHTML = `<div class="callout text-lg">
-    The expression \\(\\frac{s(3.2)-s(2.8)}{3.2-2.8}\\) is the <b>average</b> rate over the interval \\([2.8,3.2]\\).
-    It can be a decent estimate, but it’s not automatically “the instantaneous rate at 3.”
-  </div>`;
-  Deck.renderMath(box);
-});
-
-/* Exit ticket export */
-document.getElementById("eCSV").addEventListener("click", ()=>{
-  Deck.downloadCSV("AB_T1_1_exit.csv", [["Q1","Q2","Q3"],[
-    document.getElementById("e1").value||"",
-    document.getElementById("e2").value||"",
-    document.getElementById("e3").value||""
+/* ===================== Final exit exports ===================== */
+document.getElementById("feCSV").addEventListener("click", ()=>{
+  Deck.downloadCSV("AB_topic_1_1_final_exit.csv", [["blank","habit"],[
+    document.getElementById("fe1").value||"",
+    document.getElementById("fe2").value||""
   ]]);
 });
-document.getElementById("eJSON").addEventListener("click", ()=>{
-  Deck.downloadJSON("AB_T1_1_exit.json", {
-    q1:document.getElementById("e1").value||"",
-    q2:document.getElementById("e2").value||"",
-    q3:document.getElementById("e3").value||""
+document.getElementById("feJSON").addEventListener("click", ()=>{
+  Deck.downloadJSON("AB_topic_1_1_final_exit.json", {
+    blank:document.getElementById("fe1").value||"",
+    habit:document.getElementById("fe2").value||""
   });
 });
 
-/* First render */
+/* ===================== First render ===================== */
 document.addEventListener("DOMContentLoaded", ()=>{
-  renderLab();
+  labRender();
+  loadSlideMinutes();
 });
 </script>
 
