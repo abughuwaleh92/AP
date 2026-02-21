@@ -1,123 +1,81 @@
-<script>
-/**
- * Outline is flexible: units → lessons.
- * Each lesson becomes a file: /ab/lesson-#.html or /bc/lesson-#.html
- * The numbering starts after the Welcome (lesson-1 reserved).
+/* config/apcalc.js
+ * Outline → automatically becomes lesson links: /ab/lesson-#.html and /bc/lesson-#.html
+ * Each course starts at lesson-1.
  */
 window.APCALC = {
   AB: [
     {
       name: "Unit 1 — Limits & Continuity",
       lessons: [
-        "Welcome & Course Orientation",
-        "Understanding Limits (Graphical/Numerical/Analytical)",
-        "Limit Laws & Algebraic Techniques",
-        "Continuity & Types of Discontinuities",
-        "Intermediate Value Theorem & Squeeze Theorem"
+        "Lesson 1 — Limits Intro (Graphical / Numerical / Algebraic)",
+        "Lesson 2 — Limit Laws & Algebraic Techniques",
+        "Lesson 3 — Continuity & IVT"
       ]
     },
     {
-      name: "Unit 2 — Differentiation: Definition & Basic Rules",
+      name: "Unit 2 — Differentiation Basics",
       lessons: [
-        "Derivative as a Limit: Definition & Meaning",
-        "Basic Differentiation Rules (Power/Product/Quotient)",
-        "Chain Rule & Composite Functions",
-        "Implicit Differentiation",
-        "Derivatives of Trig, Exponential, Logarithmic Functions"
+        "Lesson 4 — Derivative as a Limit",
+        "Lesson 5 — Basic Rules (Power/Product/Quotient)",
+        "Lesson 6 — Chain Rule"
       ]
     },
     {
       name: "Unit 3 — Applications of Differentiation",
       lessons: [
-        "Rates of Change & Related Rates",
-        "Linearization & Differentials",
-        "Mean Value Theorem & Consequences",
-        "Optimization Problems",
-        "Motion: Velocity/Acceleration"
+        "Lesson 7 — Related Rates",
+        "Lesson 8 — Optimization",
+        "Lesson 9 — Motion (v/a)"
       ]
     },
     {
       name: "Unit 4 — Integration & Accumulation",
       lessons: [
-        "Riemann Sums & Definite Integral",
-        "Fundamental Theorem of Calculus (Part 1)",
-        "FTC (Part 2) & Antiderivatives",
-        "u-Substitution (AB level)",
-        "Area Between Curves"
+        "Lesson 10 — Riemann Sums & Definite Integral",
+        "Lesson 11 — FTC Part 1 & 2",
+        "Lesson 12 — u-Substitution (AB)"
       ]
     },
     {
-      name: "Unit 5 — Differential Equations & Applications",
+      name: "Unit 5 — Differential Equations (AB)",
       lessons: [
-        "Slope Fields & Solution Curves",
-        "Separable Differential Equations",
-        "Exponential Growth/Decay Models",
-        "Logistic Models (intro)",
-        "AP-Style FRQ Practice Set"
+        "Lesson 13 — Slope Fields",
+        "Lesson 14 — Separable DEs",
+        "Lesson 15 — Growth/Decay"
       ]
     }
   ],
 
   BC: [
     {
-      name: "Unit 1 — Limits & Continuity (BC review/fast)",
+      name: "Unit 1 — Limits & Continuity (BC pace)",
       lessons: [
-        "Welcome & Course Orientation",
-        "Limit Mastery: Fast Techniques",
-        "Continuity, IVT, Squeeze (BC pace)"
+        "Lesson 1 — L’Hôpital & Indeterminate Forms",
+        "Lesson 2 — Advanced Limit Patterns"
       ]
     },
     {
-      name: "Unit 2 — Differentiation (BC review + extras)",
+      name: "Unit 2 — Differentiation Extras",
       lessons: [
-        "Derivative Toolbox Review",
-        "Implicit & Inverse Functions",
-        "L'Hôpital’s Rule & Indeterminate Forms",
-        "Parametric Derivatives",
-        "Polar Derivatives"
+        "Lesson 3 — Parametric Derivatives",
+        "Lesson 4 — Polar Derivatives"
       ]
     },
     {
-      name: "Unit 3 — Integration Techniques (BC)",
+      name: "Unit 3 — Integration Techniques",
       lessons: [
-        "Integration by Parts",
-        "Trigonometric Integrals",
-        "Trigonometric Substitution",
-        "Partial Fractions",
-        "Improper Integrals"
+        "Lesson 5 — Integration by Parts",
+        "Lesson 6 — Partial Fractions",
+        "Lesson 7 — Improper Integrals"
       ]
     },
     {
-      name: "Unit 4 — Applications of Integration (BC)",
+      name: "Unit 4 — Sequences & Series",
       lessons: [
-        "Area Between Curves (BC depth)",
-        "Volumes (Disk/Washer/Shell)",
-        "Arc Length",
-        "Average Value of a Function"
-      ]
-    },
-    {
-      name: "Unit 5 — Differential Equations (BC)",
-      lessons: [
-        "Slope Fields, Euler’s Method",
-        "Logistic DEs & Model Interpretation",
-        "AP Mixed Practice"
-      ]
-    },
-    {
-      name: "Unit 6 — Sequences & Series (BC)",
-      lessons: [
-        "Sequences & Convergence",
-        "Series Basics & Geometric Series",
-        "Integral Test & p-Series",
-        "Comparison Tests",
-        "Alternating Series & Error Bound",
-        "Ratio/Root Tests",
-        "Power Series & Radius of Convergence",
-        "Taylor/Maclaurin Polynomials",
-        "Taylor Series & Applications"
+        "Lesson 8 — Convergence Basics",
+        "Lesson 9 — Ratio/Root Tests",
+        "Lesson 10 — Taylor Series"
       ]
     }
   ]
 };
-</script>
