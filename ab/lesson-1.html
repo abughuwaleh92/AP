@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AP Calc AB • Lesson 1 — Limits Intro</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+<!-- Brand + Theme + Engine -->
+<script src="../config/brand.js"></script>
+<link rel="stylesheet" href="../shared/deck-theme.css"/>
+<script src="../shared/deck-engine.js"></script>
+
+<style>
+  /* Optional banner strip for title slide */
+  .banner{width:100%;height:110px;background:#fff center/contain no-repeat;border-bottom:3px solid var(--accent);border-radius:10px}
+</style>
+</head>
+<body>
+
+<div id="deck" aria-live="polite">
+  <div id="slides" class="relative">
+    <div id="fsHint">Press <strong>F</strong> for fullscreen</div>
+
+    <!-- 0 Title -->
+    <section class="slide active bg-primary text-white">
+      <div class="w-full h-16 banner mb-6 rounded-md"
+           style="background-image:url('../assets/banner.jpg')" aria-label="Banner"></div>
+
+      <div class="flex items-center gap-6">
+        <img src="../assets/logo.png" alt="Logo" class="h-16 w-auto" onerror="this.style.display='none'"/>
+        <div class="text-left">
+          <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">Limits — Intro</h1>
+          <p class="text-accent text-2xl md:text-3xl mt-2 font-semibold">
+            Graphical • Numerical • Algebraic • Notation
+          </p>
+          <p class="mt-2 text-lg" id="brandLine"></p>
+        </div>
+      </div>
+      <div class="absolute bottom-6 text-sm text-gray-100">
+        Target: build “limit sense” before rules.
+      </div>
+    </section>
+
+    <!-- 1 Objectives + keywords (tap glossary) -->
+    <section class="slide">
+      <h2 class="text-4xl font-extrabold text-primary mb-2">Learning Objectives & Keywords</h2>
+      <div class="grid md:grid-cols-2 gap-6 text-left max-w-5xl">
+        <div class="card p-5">
+          <h3 class="text-2xl font-bold text-primary mb-1">Objectives</h3>
+          <ul class="list-disc list-inside space-y-1 text-lg">
+            <li>Interpret \(\lim_{x\to a} f(x)\) using graphs and tables.</li>
+            <li>Distinguish <b>limit</b> from <b>function value</b>.</li>
+            <li>Evaluate limits by <b>direct substitution</b> and basic <b>algebraic simplification</b>.</li>
+            <li>Identify when a limit <b>does not exist</b> (DNE).</li>
+          </ul>
+        </div>
+        <div class="card p-5">
+          <h3 class="text-2xl font-bold text-primary mb-1">Keywords (tap)</h3>
+          <div class="flex flex-wrap gap-2 text-lg">
+            <span class="chip" data-key="lim">Limit</span>
+            <span class="chip" data-key="two">Two-sided / One-sided</span>
+            <span class="chip" data-key="dne">DNE</span>
+            <span class="chip" data-key="cont">Continuity (preview)</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-3">You can reuse these chips in every lesson.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 Tap-to-reveal: limit vs value -->
+    <section class="slide">
+      <h2 class="text-3xl font-extrabold text-primary mb-2">Tap to Reveal — Limit vs Value</h2>
+      <div class="card p-5 w-full max-w-5xl text-left">
+        <p class="text-lg">
+          Consider a function that has a <b>hole</b> at \(x=2\), but the graph approaches \(y=5\).
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div class="card p-4">
+            <div class="font-bold text-primary mb-2">Statements</div>
+            <div class="space-y-2 text-lg">
+              <button class="chip rev" data-t="A">A) \(\lim_{x\to 2} f(x) = 5\)</button>
+              <button class="chip rev" data-t="B">B) \(f(2)=5\)</button>
+              <button class="chip rev" data-t="C">C) The limit depends on the value at \(x=2\)</button>
+              <div id="revBox" class="mt-3"></div>
+            </div>
+          </div>
+
+          <div class="card p-4">
+            <div class="font-bold text-primary mb-2">Key idea</div>
+            <div class="text-lg space-y-2">
+              <p><b>Limit:</b> what \(f(x)\) is heading to as \(x\) approaches \(2\).</p>
+              <p><b>Value:</b> what happens exactly at \(x=2\).</p>
+              <p>If the hole is at \((2,5)\), then the limit can be 5 even if \(f(2)\) is undefined.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Quick practice: direct substitution -->
+    <section class="slide">
+      <h2 class="text-3xl font-extrabold text-primary mb-2">Quick Practice — Direct Substitution</h2>
+      <div class="card p-5 w-full max-w-5xl text-left">
+        <div class="text-lg mb-2">
+          Evaluate:
+          \[
+            \lim_{x\to 3} (2x^2 - 5x + 1)
+          \]
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <input id="subAns" class="border rounded px-3 py-2 w-44" placeholder="type a number"/>
+          <button id="subCheck" class="btn primary">Check</button>
+          <button id="subHint" class="btn">Hint</button>
+        </div>
+        <div id="subFb" class="mt-3 font-semibold"></div>
+        <div id="subHintBox" class="mt-2 text-sm"></div>
+      </div>
+    </section>
+
+    <!-- 4 Quiz + export -->
+    <section class="slide">
+      <h2 class="text-3xl font-extrabold text-primary mb-2">Mini-Quiz (Exportable)</h2>
+      <div class="card p-5 w-full max-w-5xl text-left">
+        <div id="quizList" class="grid md:grid-cols-2 gap-3"></div>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button id="quizNew" class="btn">New set</button>
+          <button id="quizCheck" class="btn primary">Check</button>
+          <button id="quizCSV" class="btn">Export CSV</button>
+          <button id="quizJSON" class="btn">Export JSON</button>
+        </div>
+        <div id="quizFb" class="mt-2 h-6 font-semibold"></div>
+      </div>
+    </section>
+
+    <!-- 5 Exit -->
+    <section class="slide">
+      <h2 class="text-4xl font-extrabold text-primary mb-2">Exit Ticket</h2>
+      <div class="grid md:grid-cols-2 gap-6 text-left max-w-5xl">
+        <div class="card p-5">
+          <h3 class="text-xl font-bold text-primary">3–2–1</h3>
+          <ul class="list-disc list-inside">
+            <li>3 limits you can evaluate by substitution</li>
+            <li>2 ways a limit can be DNE</li>
+            <li>1 sentence: limit vs value</li>
+          </ul>
+        </div>
+        <div class="card p-5">
+          <h3 class="text-xl font-bold text-primary">Up next</h3>
+          <p><b>Limit Laws & Algebraic Techniques</b> — factoring, rationalizing, and simplifying expressions.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Controls -->
+<div id="controls" role="group" aria-label="Slideshow controls">
+  <button id="prev" title="Previous (←)">&laquo;</button>
+  <button id="fs" title="Toggle Fullscreen (F)">⤢</button>
+  <div id="counter">1 / 6</div>
+  <button id="next" title="Next (→)">&raquo;</button>
+</div>
+<div id="progress"></div>
+
+<!-- Glossary popover -->
+<div id="pop" role="dialog" aria-modal="true" aria-live="polite">
+  <span class="close" title="Close">✕</span>
+  <div id="popBody"></div>
+</div>
+
+<script>
+  // Brand line on title slide
+  document.getElementById('brandLine').textContent =
+    (window.BRAND?.schoolName ? window.BRAND.schoolName + " — " : "") + "AP Calculus AB";
+
+  const glossary = {
+    lim:  "<strong>Limit</strong>: the value \(f(x)\) approaches as \(x\) approaches a point.",
+    two:  "<strong>Two-sided / One-sided</strong>: compare \(\lim_{x\\to a^-}\) and \(\lim_{x\\to a^+}\).",
+    dne:  "<strong>DNE</strong>: does not exist (e.g., left/right mismatch or unbounded behavior).",
+    cont: "<strong>Continuity (preview)</strong>: \(f(a)\) exists, \(\lim_{x\\to a}f(x)\) exists, and they’re equal."
+  };
+
+  // Init deck
+  const Deck = window.DeckEngine.initDeck({
+    deckTitle: "APCalcAB_L1_LimitsIntro",
+    glossary
+  });
+
+  // Tap-to-reveal
+  const answers = {
+    A: "<div class='hint'>✅ True. The limit describes the approach to \(x=2\), not the value at \(x=2\).</div>",
+    B: "<div class='hint'>Not necessarily. The graph can approach 5 even if \(f(2)\) is undefined or different.</div>",
+    C: "<div class='hint'>❌ False. The limit is independent of the value at the point.</div>"
+  };
+  document.querySelectorAll('.rev').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.getElementById('revBox').innerHTML = answers[b.dataset.t] || "";
+      Deck.renderMath(document.getElementById('revBox'));
+    });
+  });
+
+  // Direct substitution practice
+  // lim_{x->3} (2x^2-5x+1) = 2*9 - 15 + 1 = 18 - 15 + 1 = 4
+  document.getElementById('subHint').addEventListener('click', ()=>{
+    document.getElementById('subHintBox').innerHTML =
+      "<div class='hint'>Plug in \(x=3\): compute \(2(3)^2 - 5(3) + 1\).</div>";
+    Deck.renderMath(document.getElementById('subHintBox'));
+  });
+  document.getElementById('subCheck').addEventListener('click', ()=>{
+    const v = Number(document.getElementById('subAns').value);
+    const fb = document.getElementById('subFb');
+    if(!Number.isFinite(v)){ fb.textContent="Enter a number."; fb.style.color="#b91c1c"; return; }
+    if(v===4){
+      fb.textContent="✅ Correct!"; fb.style.color="#15803d"; Deck.confetti();
+    } else {
+      fb.textContent="❌ Not quite. Try substitution carefully."; fb.style.color="#b91c1c";
+    }
+  });
+
+  // Quiz (exportable)
+  const quizState = { items: [] };
+  function newQuiz(){
+    const bank = [
+      {q:"\\(\\lim_{x\\to 2} (x^2-1)\\)", a:"3"},
+      {q:"\\(\\lim_{x\\to -1} (2x+5)\\)", a:"3"},
+      {q:"\\(\\lim_{x\\to 4} \\sqrt{x}\\)", a:"2"},
+      {q:"\\(\\lim_{x\\to 0} (\\sin x)\\)", a:"0"}
+    ];
+    quizState.items = bank.sort(()=>Math.random()-0.5).slice(0,4);
+    const box = document.getElementById('quizList'); box.innerHTML = "";
+    quizState.items.forEach((it,idx)=>{
+      const d = document.createElement('div');
+      d.className = "card p-4";
+      d.innerHTML = `
+        <div class="text-lg font-bold text-primary mb-1">Q${idx+1}</div>
+        <div class="text-xl">Evaluate: \\(${it.q}\\)</div>
+        <input class="qAns border rounded px-2 py-1 w-40 mt-2" placeholder="answer">
+      `;
+      box.appendChild(d);
+    });
+    Deck.renderMath(box);
+    document.getElementById('quizFb').textContent="";
+  }
+  newQuiz();
+  document.getElementById('quizNew').addEventListener('click', newQuiz);
+
+  document.getElementById('quizCheck').addEventListener('click', ()=>{
+    let ok=0;
+    [...document.querySelectorAll('#quizList .card')].forEach((row,idx)=>{
+      const want = quizState.items[idx].a;
+      const inp = row.querySelector('.qAns');
+      const got = (inp.value||"").trim();
+      inp.style.borderColor = (got===want) ? "#22c55e" : "#ef4444";
+      if(got===want) ok++;
+    });
+    const fb = document.getElementById('quizFb');
+    fb.textContent = (ok===quizState.items.length) ? "✅ Perfect!" : `Score: ${ok}/${quizState.items.length}`;
+    if(ok===quizState.items.length) Deck.confetti();
+  });
+
+  document.getElementById('quizCSV').addEventListener('click', ()=>{
+    const rows = [["question","correct","user"]];
+    [...document.querySelectorAll('#quizList .card')].forEach((row,idx)=>{
+      const user = row.querySelector('.qAns').value || "";
+      rows.push([quizState.items[idx].q, quizState.items[idx].a, user]);
+    });
+    Deck.downloadCSV("APCalcAB_L1_quiz.csv", rows);
+  });
+
+  document.getElementById('quizJSON').addEventListener('click', ()=>{
+    const data = [...document.querySelectorAll('#quizList .card')].map((row,idx)=>({
+      question: quizState.items[idx].q,
+      correct: quizState.items[idx].a,
+      user: row.querySelector('.qAns').value || ""
+    }));
+    Deck.downloadJSON("APCalcAB_L1_quiz.json", data);
+  });
+</script>
+
+</body>
+</html>
