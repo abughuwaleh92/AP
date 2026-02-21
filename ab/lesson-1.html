@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AP Calc AB • Lesson 1 — Limits (Interactive, Student-Centered)</title>
+<title>AP Calc AB • Lesson 1 — Limits (Exploration First)</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -16,307 +16,579 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 
-<!-- Brand + shared theme/engine -->
+<!-- Brand + shared deck -->
 <script src="../config/brand.js"></script>
 <link rel="stylesheet" href="../shared/deck-theme.css"/>
 <script src="../shared/deck-engine.js"></script>
 
 <style>
-  .twoCol{display:grid;grid-template-columns:1fr;gap:14px}
-  @media (min-width:980px){.twoCol{grid-template-columns:1fr 1fr}}
-  .threeCol{display:grid;grid-template-columns:1fr;gap:14px}
-  @media (min-width:980px){.threeCol{grid-template-columns:1fr 1fr 1fr}}
+  /* ---------- Better maroon+gold theme (overrides shared) ---------- */
+  :root{
+    --primary:#6C1D45;
+    --primary2:#8B2450;
+    --accent:#C7A34F;
+    --accent2:#E4D4A8;
+    --paper:#ffffff;
+    --ink:#0f172a;
+    --muted:#475569;
+    --line:rgba(15,23,42,.12);
+    --shadow:0 16px 44px rgba(2,6,23,.16);
+  }
 
-  .pill{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #e5e7eb;border-radius:999px;padding:.35rem .75rem;background:#fff}
-  .callout{border-left:6px solid var(--accent); padding:10px 12px; background:#fff; border-radius:12px; border:1px solid #e5e7eb}
+  html,body{background:#111827;}
+
+  #slides{
+    box-shadow: var(--shadow);
+    border-radius:22px;
+  }
+
+  /* Make slides “page-like”: top-left aligned by default */
+  .slide{
+    align-items:stretch !important;
+    text-align:left !important;
+    justify-content:flex-start !important;
+    gap:14px;
+  }
+  .slide.center{
+    align-items:center !important;
+    text-align:center !important;
+    justify-content:center !important;
+  }
+
+  h1,h2,h3{font-family:Poppins,Inter,system-ui}
+  .titleGlow{
+    text-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  /* Cards: clearer, slightly more premium */
+  .card{
+    background: linear-gradient(180deg, #fff 0%, #fbfbfb 100%);
+    border:1px solid var(--line);
+    border-radius:18px;
+  }
+
+  .callout{
+    border-left:6px solid var(--accent);
+    background: linear-gradient(180deg, rgba(228,212,168,.26), rgba(255,255,255,1));
+    border-radius:14px;
+    border:1px solid var(--line);
+    padding:10px 12px;
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:.5rem;
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:.35rem .75rem;
+    background:#fff;
+    font-weight:800;
+  }
+
+  .kbd2{
+    font-variant-numeric:tabular-nums;
+    font-weight:900;
+    padding:.1rem .35rem;
+    border-radius:.4rem;
+    border:1px solid #d1d5db;
+    background:#fff;
+  }
+
+  .soft{color:var(--muted)}
   .small{font-size:.95rem}
   .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
-  .teacher{background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:10px 12px}
-  .teacher b{color:#3730a3}
-  .soft{color:#475569}
-  .kbd2{font-variant-numeric:tabular-nums;font-weight:900;padding:.1rem .35rem;border-radius:.4rem;border:1px solid #d1d5db;background:#fff}
 
-  /* Graph widget */
-  .gwrap{border:1px solid #e5e7eb;border-radius:14px;background:#fff;padding:10px}
-  .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
-  .gbar .left{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .gbar input[type="range"]{width:240px}
-  .badge{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;padding:.25rem .6rem;font-size:.85rem;border:1px solid #e5e7eb;background:#fff}
-  .ok{border-color:#bbf7d0;background:#f0fdf4;color:#166534}
-  .warn{border-color:#fed7aa;background:#fff7ed;color:#9a3412}
-  .bad{border-color:#fecaca;background:#fef2f2;color:#991b1b}
+  /* Buttons: more modern */
+  .btn{
+    border:1px solid var(--line);
+    background:#fff;
+    font-weight:900;
+    border-radius:999px;
+    padding:.55rem 1rem;
+    cursor:pointer;
+    transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{filter:brightness(.985); transform: translateY(-1px);}
+  .btn.primary{
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    border-color: rgba(0,0,0,.0);
+    color:#fff;
+  }
+  .btn.gold{
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color: rgba(0,0,0,.0);
+    color: var(--primary);
+  }
 
-  table.clean{width:100%;border-collapse:collapse;font-size:.95rem}
-  table.clean th, table.clean td{border:1px solid #e5e7eb;padding:6px 8px;text-align:center}
-  table.clean th{background:#f8fafc;font-weight:800}
+  /* Modern tabs */
+  .tabbar{
+    display:flex; gap:8px; flex-wrap:wrap;
+    background: rgba(108,29,69,.08);
+    border:1px solid rgba(108,29,69,.18);
+    border-radius:16px;
+    padding:6px;
+  }
+  .tab{
+    flex:1;
+    min-width:150px;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(108,29,69,.18);
+    background: rgba(255,255,255,.75);
+    color: var(--primary);
+    font-weight:900;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .tab:hover{transform:translateY(-1px); filter:brightness(.99);}
+  .tab[aria-selected="true"]{
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--primary);
+    border-color: rgba(199,163,79,.65);
+    box-shadow: 0 12px 28px rgba(2,6,23,.08);
+  }
 
-  /* ε–δ demo */
-  .edRow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .edRow input[type="range"]{width:220px}
+  /* Layout helpers */
+  .wrap{width:100%; max-width:1180px; margin:0 auto;}
+  .twoCol{display:grid; grid-template-columns:1fr; gap:14px}
+  @media (min-width:980px){.twoCol{grid-template-columns:1fr 1fr}}
+  .threeCol{display:grid; grid-template-columns:1fr; gap:14px}
+  @media (min-width:980px){.threeCol{grid-template-columns:1fr 1fr 1fr}}
+
+  /* Graph widgets */
+  .gwrap{border:1px solid var(--line); border-radius:16px; background:#fff; padding:10px}
+  .gbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-top:8px}
+  .gbar .left{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .gbar input[type="range"]{width:260px; cursor:pointer;}
+  .badge{
+    display:inline-flex; align-items:center; gap:.45rem;
+    border-radius:999px; padding:.25rem .6rem; font-size:.85rem;
+    border:1px solid var(--line); background:#fff;
+    font-weight:800;
+  }
+  .ok{border-color:#bbf7d0; background:#f0fdf4; color:#166534}
+  .warn{border-color:#fed7aa; background:#fff7ed; color:#9a3412}
+  .bad{border-color:#fecaca; background:#fef2f2; color:#991b1b}
+
+  /* Scrollbox for long stems (your “cursor”/scroll affordance) */
+  .scrollbox{
+    max-height:140px;
+    overflow:auto;
+    border:1px dashed rgba(108,29,69,.25);
+    border-radius:14px;
+    padding:10px 12px;
+    background: rgba(199,163,79,.08);
+    position:relative;
+  }
+  .scrollHint{
+    position:absolute; right:10px; top:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:.15rem .5rem;
+    font-size:.8rem;
+    font-weight:900;
+    color:var(--primary);
+  }
+  .scrollbox::-webkit-scrollbar{height:10px; width:10px}
+  .scrollbox::-webkit-scrollbar-thumb{background: rgba(108,29,69,.25); border-radius:999px}
+  .scrollbox::-webkit-scrollbar-track{background: rgba(2,6,23,.04); border-radius:999px}
+
+  /* Tables */
+  table.clean{width:100%; border-collapse:collapse; font-size:.95rem}
+  table.clean th, table.clean td{border:1px solid var(--line); padding:6px 8px; text-align:center}
+  table.clean th{
+    background: linear-gradient(180deg, rgba(199,163,79,.20), rgba(255,255,255,1));
+    color: var(--primary);
+    font-weight:900;
+  }
+
+  /* Image placeholders */
+  .imgFrame{
+    border:1px dashed rgba(108,29,69,.35);
+    border-radius:16px;
+    padding:10px;
+    background: rgba(199,163,79,.08);
+    min-height:170px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color: var(--primary);
+    font-weight:900;
+  }
+  .imgFrame small{display:block; font-weight:700; color: var(--muted); margin-top:6px}
 </style>
 </head>
 
 <body>
+
 <div id="deck" aria-live="polite">
   <div id="slides" class="relative">
+
     <div id="fsHint">Press <strong>F</strong> for fullscreen</div>
 
     <!-- 0 • Title -->
-    <section class="slide active bg-primary">
-      <div class="w-full h-16 banner mb-6 rounded-md" style="background-image:url('../assets/banner.jpg')" aria-label="Banner"></div>
-      <div class="flex items-center gap-6">
-        <img src="../assets/logo.png" alt="Logo" class="h-16 w-auto" onerror="this.style.display='none'"/>
-        <div class="text-left">
-          <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">Limits — See, Predict, Justify</h1>
-          <p class="text-accent text-2xl md:text-3xl mt-2 font-semibold">Interactive graphs • tables • AP reasoning</p>
-          <p class="mt-2 text-lg" id="brandLine"></p>
-        </div>
-      </div>
-      <div class="absolute bottom-6 text-sm text-gray-100">
-        Today: build “limit sense” (meaning + existence + evaluation).
-      </div>
-    </section>
+    <section class="slide center bg-primary text-white">
+      <div class="wrap">
+        <div class="w-full h-16 banner mb-6 rounded-md" id="bannerTop" aria-label="Banner"></div>
 
-    <!-- 1 • Student plan + norms -->
-    <section class="slide">
-      <h2 class="text-4xl font-extrabold text-primary mb-2">What You’ll Do (Student-Centered)</h2>
-      <div class="card p-5 w-full max-w-5xl text-left text-lg space-y-3">
-        <div class="pill"><b>1.</b> Predict from a graph (no formula yet)</div>
-        <div class="pill"><b>2.</b> Test with a table (approach from both sides)</div>
-        <div class="pill"><b>3.</b> Justify with algebra (when possible)</div>
-        <div class="pill"><b>4.</b> Decide: limit exists? why?</div>
-        <div class="pill"><b>5.</b> AP-style practice: MCQ + mini-FRQ</div>
-        <div class="callout">
-          <b>Talk move:</b> “As \(x\) gets close to \(a\), \(f(x)\) gets close to \(L\) because …”
+        <div class="flex items-center gap-6 justify-center">
+          <img id="logoTop" alt="Logo" class="h-16 w-auto" onerror="this.style.display='none'"/>
+          <div>
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight titleGlow">Limits</h1>
+            <p class="text-accent text-2xl md:text-3xl mt-2 font-semibold">
+              Explore first • Name the idea second • Justify like AP
+            </p>
+            <p class="mt-2 text-lg" id="brandLine"></p>
+          </div>
         </div>
-        <div class="teacher hidden" id="t1">
-          <b>Teacher note:</b> Run as “stations” even in whole-group: students predict → test → justify.
-          Aim for students saying “near vs at” and “left vs right”.
-        </div>
-        <button class="btn" id="toggleTeacher1">Toggle Teacher Notes</button>
-      </div>
-    </section>
 
-    <!-- 2 • Learning targets + vocab -->
-    <section class="slide">
-      <h2 class="text-4xl font-extrabold text-primary mb-2">Learning Targets & Vocabulary</h2>
-      <div class="twoCol w-full max-w-6xl text-left">
-        <div class="card p-5">
-          <h3 class="text-2xl font-bold text-primary mb-2">I can…</h3>
-          <ul class="list-disc list-inside space-y-2 text-lg">
-            <li>Interpret \(\lim_{x\to a} f(x)\) from <b>graphs</b> and <b>tables</b>.</li>
-            <li>Use <b>left/right</b> behavior to decide if a limit exists.</li>
-            <li>Evaluate simple limits by substitution or simplification.</li>
-            <li>Explain the difference between \(\lim_{x\to a} f(x)\) and \(f(a)\).</li>
-          </ul>
-          <div class="callout small mt-4">
-            <b>Success criteria:</b> you can explain <i>why</i> a limit exists/doesn’t, not only compute it.
-          </div>
+        <div class="mt-6 flex flex-wrap gap-3 justify-center text-sm">
+          <span class="pill">Graph + Table + Algebra</span>
+          <span class="pill">Tiered practice</span>
+          <span class="pill">Boss Fight challenge</span>
+          <span class="pill">Exports: CSV/JSON</span>
         </div>
-        <div class="card p-5">
-          <h3 class="text-2xl font-bold text-primary mb-2">Keywords (tap)</h3>
-          <div class="flex flex-wrap gap-2 text-lg">
-            <span class="chip" data-key="lim">Limit</span>
-            <span class="chip" data-key="lr">Left/right limits</span>
-            <span class="chip" data-key="dne">DNE</span>
-            <span class="chip" data-key="rem">Removable discontinuity</span>
-            <span class="chip" data-key="jump">Jump discontinuity</span>
-            <span class="chip" data-key="inf">Infinite behavior</span>
-          </div>
-          <div class="teacher hidden mt-4" id="t2">
-            <b>Teacher note:</b> Don’t do epsilon-delta formally unless you want the sandbox slide (later). AB starts with meaning + tools.
-          </div>
-          <button class="btn mt-3" id="toggleTeacher2">Toggle Teacher Notes</button>
+
+        <div class="mt-6 text-sm text-gray-100">
+          Today’s vibe: we chase values near a point — even when the function misbehaves at the point.
         </div>
       </div>
     </section>
 
-    <!-- 3 • Core idea (brief explanation) + definition -->
+    <!-- 1 • Exploration A: “Chasing game” (NO word limit yet) -->
     <section class="slide">
-      <h2 class="text-4xl font-extrabold text-primary mb-2">The Big Idea (Brief, Powerful)</h2>
-      <div class="card p-5 w-full max-w-6xl text-left text-lg space-y-3">
-        <div class="callout">
-          <b>Informal definition:</b>
-          \[
-            \lim_{x\to a} f(x)=L
-          \]
-          means: if \(x\) gets close to \(a\) (but not necessarily equal to \(a\)), then \(f(x)\) gets close to \(L\).
-        </div>
-        <div class="twoCol">
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Two rules of the universe</h3>
-            <ul class="list-disc list-inside space-y-2">
-              <li>Limits care about what happens <b>near</b> \(a\), not necessarily <b>at</b> \(a\).</li>
-              <li>A two-sided limit exists only if <b>left limit = right limit</b>.</li>
-            </ul>
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Exploration 1 — What Value Is It Chasing?</h2>
+        <div class="soft text-lg">Don’t say “limit” yet. Just describe what you notice near the target.</div>
+
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Real-life hook (image placeholder)</h3>
+            <div class="imgFrame">
+              Add image: “speedometer / zooming in / approaching a moment”
+              <small>Replace with your own image path later.</small>
+            </div>
+            <div class="callout mt-3 text-lg">
+              <b>Prompt:</b> You can’t measure “instantaneous” by stopping time… so what do we do instead?
+              <br><span class="soft">We measure <b>nearby</b>, then infer what the value is “chasing.”</span>
+            </div>
           </div>
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Tap: Formal definition (optional)</h3>
-            <button class="btn" id="showFormal">Show / Hide ε–δ definition</button>
-            <div id="formalBox" class="mt-3 hidden">
-              <div class="hint">
-                \[
-                \lim_{x\to a} f(x)=L \;\;\text{means: for every }\varepsilon>0\text{ there exists }\delta>0
-                \]
-                such that if \(0<|x-a|<\delta\), then \(|f(x)-L|<\varepsilon\).
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">The chasing machine</h3>
+            <div class="small soft">Move the slider to get closer to \(a=1\). Watch the outputs.</div>
+
+            <div class="gwrap mt-3">
+              <div class="gbar">
+                <div class="left">
+                  <span class="badge"><b>Target</b> \(a\): <span class="mono">1</span></span>
+                  <span class="badge"><b>x</b>: <span id="ex1x" class="mono"></span></span>
+                  <span class="badge"><b>f(x)</b>: <span id="ex1y" class="mono"></span></span>
+                </div>
+                <div class="left">
+                  <button class="btn" id="ex1Left">near from left</button>
+                  <button class="btn" id="ex1Right">near from right</button>
+                </div>
               </div>
-              <div class="small soft mt-2">
-                You do <b>not</b> need to master this today — but we’ll play with it later in the sandbox.
+
+              <svg id="ex1svg" viewBox="0 0 640 360" style="width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff"></svg>
+
+              <div class="gbar">
+                <div class="left">
+                  <label class="text-sm font-extrabold text-primary">Zoom (closer):</label>
+                  <input id="ex1z" type="range" min="1" max="6" value="2">
+                </div>
+                <span id="ex1badge" class="badge warn">Observe → predict</span>
               </div>
+
+              <div class="mt-3 overflow-auto">
+                <table class="clean" id="ex1table"></table>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <div class="pill">Your claim: the output is chasing</div>
+              <div class="mt-2 flex flex-wrap gap-2 items-center">
+                <input id="ex1guess" class="border rounded px-2 py-1 w-40" placeholder="number">
+                <button class="btn primary" id="ex1check">Check</button>
+                <button class="btn" id="ex1reveal">Reveal</button>
+              </div>
+              <label class="block mt-2 text-sm font-extrabold text-primary">One strong sentence (use “near” language)</label>
+              <textarea id="ex1why" class="w-full border rounded p-2" rows="2"
+                placeholder="As x gets close to 1 (but not equal), f(x) gets close to ... because ..."></textarea>
+              <div id="ex1fb" class="mt-2 font-extrabold"></div>
+              <div id="ex1ans" class="mt-2"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 4 • Interactive Graph Lab (choose scenario) -->
+    <!-- 2 • Exploration B: Two sides can disagree -->
     <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">Graph Lab — Move \(x\) Toward \(a\)</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="callout small mb-3">
-          <b>Student task:</b> Pick a scenario → drag the slider → predict \(\lim_{x\to a} f(x)\) → justify in words.
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Exploration 2 — When “Near” Has Two Opinions</h2>
+        <div class="soft text-lg">Sometimes left-near and right-near don’t agree. Then there’s no single chased value.</div>
+
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Move x toward \(a=1\)</h3>
+            <div class="gwrap">
+              <div class="gbar">
+                <div class="left">
+                  <span class="badge"><b>a</b>: <span class="mono">1</span></span>
+                  <span class="badge"><b>x</b>: <span id="ex2x" class="mono"></span></span>
+                  <span class="badge"><b>g(x)</b>: <span id="ex2y" class="mono"></span></span>
+                </div>
+                <div class="left">
+                  <button class="btn" id="ex2Left">x→1⁻</button>
+                  <button class="btn" id="ex2Right">x→1⁺</button>
+                </div>
+              </div>
+
+              <svg id="ex2svg" viewBox="0 0 640 360" style="width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff"></svg>
+
+              <div class="gbar">
+                <div class="left">
+                  <label class="text-sm font-extrabold text-primary">Move x:</label>
+                  <input id="ex2s" type="range" min="-1000" max="1000" value="-700">
+                </div>
+                <span id="ex2badge" class="badge bad">Two sides?</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Quick decision</h3>
+            <div class="callout text-lg">
+              Based on the graph, does the output chase <b>one</b> number near \(x=1\)?
+            </div>
+
+            <div class="mt-3 space-y-2 text-lg">
+              <label class="block"><input type="radio" name="ex2q" value="A"> Yes, it chases 2</label>
+              <label class="block"><input type="radio" name="ex2q" value="B"> Yes, it chases 3</label>
+              <label class="block"><input type="radio" name="ex2q" value="C"> No — left and right chase different numbers</label>
+              <label class="block"><input type="radio" name="ex2q" value="D"> No — it blows up to infinity</label>
+            </div>
+
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <button class="btn primary" id="ex2check">Check</button>
+              <button class="btn" id="ex2reveal">Reveal explanation</button>
+            </div>
+
+            <div id="ex2fb" class="mt-2 font-extrabold"></div>
+            <div id="ex2ans" class="mt-2"></div>
+          </div>
         </div>
 
-        <div class="twoCol">
+        <div class="callout mt-3 text-lg">
+          <b>Key habit (AP):</b> Always compare left-near and right-near before claiming a single value.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 • Now we name it: limit + informal & formal definitions -->
+    <section class="slide">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Now We Name the Idea: “Limit”</h2>
+
+        <div class="card p-5 mt-3">
+          <div class="callout text-lg">
+            <b>Informal definition:</b>
+            \[
+              \lim_{x\to a} f(x)=L
+            \]
+            means: as \(x\) gets close to \(a\) (not necessarily equal), \(f(x)\) gets close to \(L\).
+          </div>
+
+          <div class="twoCol mt-3">
+            <div class="card p-4">
+              <h3 class="text-xl font-bold text-primary mb-2">Two rules that save lives</h3>
+              <ul class="list-disc list-inside text-lg space-y-2">
+                <li>Limits care about <b>near</b> \(a\), not necessarily <b>at</b> \(a\).</li>
+                <li>A two-sided limit exists only if <b>left limit = right limit</b>.</li>
+              </ul>
+              <div class="mt-3 soft">
+                Translation: if left and right disagree, the limit is <b>DNE</b>.
+              </div>
+            </div>
+
+            <div class="card p-4">
+              <h3 class="text-xl font-bold text-primary mb-2">Tap: formal definition (ε–δ)</h3>
+              <button class="btn gold" id="showFormal">Show / Hide ε–δ definition</button>
+              <div id="formalBox" class="mt-3 hidden">
+                <div class="hint text-lg">
+                  \[
+                  \lim_{x\to a} f(x)=L \text{ means: for every }\varepsilon>0\text{ there exists }\delta>0
+                  \]
+                  such that if \(0<|x-a|<\delta\), then \(|f(x)-L|<\varepsilon\).
+                </div>
+                <div class="small soft mt-2">
+                  You don’t need full mastery yet — but we’ll make it feel real with a sandbox later.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 text-sm soft">
+            Tip: press <span class="kbd2">→</span> / <span class="kbd2">←</span> to navigate slides.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 • Graph Lab with modern tabs (4 scenarios) -->
+    <section class="slide">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Graph Lab — Limits Under Pressure</h2>
+        <div class="soft text-lg">Switch scenarios with tabs. Move \(x\) near \(a\). Decide: exists? value? why?</div>
+
+        <div class="tabbar mt-3" role="tablist" aria-label="Scenario tabs">
+          <button class="tab" id="tabRem" role="tab" aria-selected="true" data-scn="rem">🕳 Hole (removable)</button>
+          <button class="tab" id="tabJump" role="tab" aria-selected="false" data-scn="jump">↕ Jump</button>
+          <button class="tab" id="tabInf" role="tab" aria-selected="false" data-scn="inf">⬆︎ Asymptote</button>
+          <button class="tab" id="tabOsc" role="tab" aria-selected="false" data-scn="osc">🌀 Oscillation</button>
+        </div>
+
+        <div class="twoCol mt-3">
           <div class="gwrap">
-            <div class="flex flex-wrap gap-2 items-center justify-between">
-              <div class="font-extrabold text-primary">Interactive Graph</div>
-              <div class="flex flex-wrap gap-2 items-center">
-                <label class="text-sm font-semibold">Scenario:</label>
-                <select id="scSel" class="border rounded px-2 py-1">
-                  <option value="rem">Removable hole (limit exists)</option>
-                  <option value="jump">Jump (left ≠ right)</option>
-                  <option value="inf">Infinite behavior (vertical asymptote)</option>
-                  <option value="osc">Oscillation (DNE)</option>
-                </select>
+            <div class="gbar">
+              <div class="left">
+                <span class="badge"><b>a</b>: <span id="gA" class="mono"></span></span>
+                <span class="badge"><b>x</b>: <span id="gX" class="mono"></span></span>
+                <span class="badge"><b>f(x)</b>: <span id="gY" class="mono"></span></span>
+              </div>
+              <div class="left">
+                <button class="btn" id="gLeft">x→a⁻</button>
+                <button class="btn" id="gRight">x→a⁺</button>
               </div>
             </div>
 
-            <svg id="graphSVG" viewBox="0 0 640 420" role="img" aria-label="Interactive limit graph"
-                 style="width:100%;height:auto;margin-top:8px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff">
-            </svg>
+            <svg id="gSvg" viewBox="0 0 640 360" style="width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff"></svg>
 
             <div class="gbar">
               <div class="left">
-                <span class="badge"><b>a</b>: <span id="aOut" class="mono"></span></span>
-                <span class="badge"><b>x</b>: <span id="xOut" class="mono"></span></span>
-                <span class="badge"><b>f(x)</b>: <span id="yOut" class="mono"></span></span>
+                <label class="text-sm font-extrabold text-primary">Move x:</label>
+                <input id="gSlider" type="range" min="-1000" max="1000" value="-700">
               </div>
-              <div class="left">
-                <button class="btn" id="snapLeft">x→a⁻</button>
-                <button class="btn" id="snapRight">x→a⁺</button>
-              </div>
+              <span id="gExist" class="badge">Checking…</span>
             </div>
 
             <div class="gbar">
               <div class="left">
-                <label class="text-sm font-semibold">Move x:</label>
-                <input id="xSlider" type="range" min="-1000" max="1000" value="-600">
+                <span class="badge"><b>Left near</b>: <span id="gL" class="mono"></span></span>
+                <span class="badge"><b>Right near</b>: <span id="gR" class="mono"></span></span>
               </div>
               <div class="left">
-                <span id="existBadge" class="badge">Checking…</span>
+                <span class="badge"><b>Two-sided</b>: <span id="gT" class="mono"></span></span>
               </div>
             </div>
           </div>
 
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Your claim (write it!)</h3>
-            <div class="small soft">Write a prediction + reasoning. Then check.</div>
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Your claim (AP-style)</h3>
 
-            <div class="mt-3 flex flex-wrap gap-2 items-center">
-              <span class="pill">Predicted limit:</span>
-              <input id="predL" class="border rounded px-2 py-1 w-40" placeholder="e.g., 5 or DNE">
-              <button id="checkPred" class="btn primary">Check</button>
-              <button id="revealAns" class="btn">Reveal</button>
+            <div class="callout text-lg">
+              Fill these like a scientist: left, right, then decide two-sided.
             </div>
 
-            <label class="block mt-3 text-sm font-semibold">Reasoning (one strong sentence)</label>
-            <textarea id="predWhy" class="w-full border rounded p-2" rows="3"
-              placeholder="As x approaches a from both sides, f(x) approaches ... therefore ..."></textarea>
+            <div class="mt-3 grid gap-2">
+              <div class="flex gap-2 flex-wrap items-center">
+                <span class="pill">Left:</span>
+                <input id="uLeft" class="border rounded px-2 py-1 w-44" placeholder="number / ±∞ / DNE">
+                <span class="pill">Right:</span>
+                <input id="uRight" class="border rounded px-2 py-1 w-44" placeholder="number / ±∞ / DNE">
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <span class="pill">Two-sided:</span>
+                <input id="uTwo" class="border rounded px-2 py-1 w-44" placeholder="number / DNE">
+                <button class="btn primary" id="gCheck">Check</button>
+                <button class="btn" id="gReveal">Reveal</button>
+              </div>
 
-            <div id="predFb" class="mt-2 font-bold"></div>
-            <div id="ansBox" class="mt-3"></div>
+              <label class="block text-sm font-extrabold text-primary">Reasoning (short + sharp)</label>
+              <textarea id="uWhy" class="w-full border rounded p-2" rows="3"
+                placeholder="As x→a⁻, f(x)→...; as x→a⁺, f(x)→...; therefore the two-sided limit ..."></textarea>
 
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button class="btn" id="labCSV">Export CSV</button>
-              <button class="btn" id="labJSON">Export JSON</button>
+              <div id="gFb" class="mt-2 font-extrabold"></div>
+              <div id="gAns" class="mt-2"></div>
+
+              <div class="mt-2 flex gap-2 flex-wrap">
+                <button class="btn" id="gCSV">Export CSV</button>
+                <button class="btn" id="gJSON">Export JSON</button>
+              </div>
             </div>
-
-            <div class="teacher hidden mt-3" id="t4">
-              <b>Teacher note:</b> Insist on two claims: (1) what left does, (2) what right does.
-              If they only give a number, ask: “What evidence?”
-            </div>
-            <button class="btn mt-3" id="toggleTeacher4">Toggle Teacher Notes</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 5 • Table Lab (auto-generate) -->
+    <!-- 5 • Table Lab (cleaner + generates) -->
     <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">Table Lab — Approach From Both Sides</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="twoCol">
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Generate a table near \(a\)</h3>
-            <div class="small soft">Pick a scenario. Choose how close you want to get to \(a\).</div>
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Table Lab — Evidence From Numbers</h2>
+        <div class="soft text-lg">Tables are how you “see” approach behavior when graphs are missing.</div>
 
-            <div class="mt-3 flex flex-wrap gap-2 items-center">
-              <label class="text-sm font-semibold">Scenario:</label>
-              <select id="tblScenario" class="border rounded px-2 py-1">
-                <option value="rem">Removable hole</option>
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Generate a table</h3>
+
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="pill">Scenario</span>
+              <select id="tScenario" class="border rounded px-2 py-1">
+                <option value="rem">Hole (removable)</option>
                 <option value="jump">Jump</option>
-                <option value="inf">Infinite</option>
+                <option value="inf">Asymptote</option>
                 <option value="osc">Oscillation</option>
               </select>
 
-              <label class="text-sm font-semibold">Depth:</label>
-              <select id="tblDepth" class="border rounded px-2 py-1">
-                <option value="3">3 rows</option>
-                <option value="4" selected>4 rows</option>
-                <option value="5">5 rows</option>
+              <span class="pill">Rows</span>
+              <select id="tDepth" class="border rounded px-2 py-1">
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
               </select>
 
-              <button id="tblBuild" class="btn primary">Build table</button>
+              <button class="btn primary" id="tBuild">Build</button>
             </div>
 
             <div class="mt-3 overflow-auto">
-              <table class="clean" id="tblOut" aria-label="Approach table"></table>
+              <table class="clean" id="tOut"></table>
             </div>
 
-            <div class="callout small mt-3">
-              <b>Prompt:</b> “What number are the outputs chasing from the left? From the right?”
+            <div class="callout mt-3 text-lg">
+              <b>Prompt:</b> What does the left column “chase”? What does the right column “chase”?
             </div>
           </div>
 
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Commit to a conclusion</h3>
-            <div class="small soft">State left limit, right limit, and whether the two-sided limit exists.</div>
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Your conclusion</h3>
 
-            <div class="mt-3 space-y-2">
-              <div class="flex gap-2 items-center flex-wrap">
-                <span class="pill">Left limit:</span>
-                <input id="Lleft" class="border rounded px-2 py-1 w-40" placeholder="number / ±∞ / DNE">
-                <span class="pill">Right limit:</span>
-                <input id="Lright" class="border rounded px-2 py-1 w-40" placeholder="number / ±∞ / DNE">
+            <div class="grid gap-2">
+              <div class="flex gap-2 flex-wrap items-center">
+                <span class="pill">Left</span>
+                <input id="tLeft" class="border rounded px-2 py-1 w-44" placeholder="number / ±∞ / DNE">
+                <span class="pill">Right</span>
+                <input id="tRight" class="border rounded px-2 py-1 w-44" placeholder="number / ±∞ / DNE">
+              </div>
+              <div class="flex gap-2 flex-wrap items-center">
+                <span class="pill">Two-sided</span>
+                <input id="tTwo" class="border rounded px-2 py-1 w-44" placeholder="number / DNE">
+                <button class="btn primary" id="tCheck">Check</button>
+                <button class="btn" id="tReveal">Reveal</button>
               </div>
 
-              <div class="flex gap-2 items-center flex-wrap">
-                <span class="pill">Two-sided:</span>
-                <input id="Ltwo" class="border rounded px-2 py-1 w-40" placeholder="number / DNE">
-                <button id="tblCheck" class="btn primary">Check</button>
-                <button id="tblReveal" class="btn">Reveal</button>
-              </div>
+              <label class="block text-sm font-extrabold text-primary">Reasoning</label>
+              <textarea id="tWhy" class="w-full border rounded p-2" rows="3"></textarea>
 
-              <label class="block text-sm font-semibold mt-2">Reasoning (use left/right language)</label>
-              <textarea id="tblWhy" class="w-full border rounded p-2" rows="3"></textarea>
+              <div id="tFb" class="mt-2 font-extrabold"></div>
+              <div id="tAns" class="mt-2"></div>
 
-              <div id="tblFb" class="mt-2 font-bold"></div>
-              <div id="tblAns" class="mt-2"></div>
-
-              <div class="mt-3 flex flex-wrap gap-2">
-                <button class="btn" id="tblCSV">Export CSV</button>
-                <button class="btn" id="tblJSON">Export JSON</button>
+              <div class="mt-2 flex gap-2 flex-wrap">
+                <button class="btn" id="tCSV">Export CSV</button>
+                <button class="btn" id="tJSON">Export JSON</button>
               </div>
             </div>
           </div>
@@ -324,218 +596,280 @@
       </div>
     </section>
 
-    <!-- 6 • ε–δ sandbox (interactive) -->
+    <!-- 6 • Real-world + NEW graph: secant slope slider (preview derivative) -->
     <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">Definition Sandbox (Optional, but Awesome): ε–δ</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="callout small mb-3">
-          We’ll use \(f(x)=x^2\), \(a=2\), \(L=4\). Your mission: choose \(\delta\) so that
-          \(0&lt;|x-2|&lt;\delta\) forces \(|x^2-4|&lt;\varepsilon\).
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Real-World Meaning — “Instant” From “Near”</h2>
+        <div class="soft text-lg">This is why limits exist: we estimate an instant using nearby measurements.</div>
+
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Real-life image placeholder</h3>
+            <div class="imgFrame">
+              Add image: “car speedometer / motion / zooming into curve”
+              <small>Put your real-life application photo here.</small>
+            </div>
+
+            <div class="callout mt-3 text-lg">
+              <b>Student task:</b> Explain why “instantaneous speed” is really a “nearby-average becoming exact.”
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Graph: Secant slope → Tangent slope</h3>
+            <div class="small soft">
+              Move \(h\) closer to 0. Watch the secant line turn into a tangent.
+            </div>
+
+            <div class="gwrap mt-3">
+              <div class="gbar">
+                <div class="left">
+                  <span class="badge"><b>a</b>: <span class="mono">2</span></span>
+                  <span class="badge"><b>h</b>: <span id="hOut" class="mono"></span></span>
+                  <span class="badge"><b>secant slope</b>: <span id="mOut" class="mono"></span></span>
+                </div>
+              </div>
+
+              <svg id="secSvg" viewBox="0 0 640 360" style="width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff"></svg>
+
+              <div class="gbar">
+                <div class="left">
+                  <label class="text-sm font-extrabold text-primary">Move \(h\):</label>
+                  <input id="hSlider" type="range" min="5" max="200" value="120">
+                </div>
+                <div class="left">
+                  <button class="btn" id="hTiny">Make h tiny</button>
+                  <button class="btn gold" id="hReveal">Reveal target slope</button>
+                </div>
+              </div>
+
+              <div id="hFb" class="mt-2 font-extrabold"></div>
+              <div id="hAns" class="mt-2"></div>
+
+              <div class="mt-2">
+                <span class="pill">Predict tangent slope at \(x=2\):</span>
+                <input id="hGuess" class="border rounded px-2 py-1 w-40" placeholder="number">
+                <button class="btn primary" id="hCheck">Check</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="twoCol">
+        <div class="soft text-sm mt-2">
+          This is a preview of derivatives: \(f'(a)=\lim_{h\to 0}\frac{f(a+h)-f(a)}{h}\).
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 • ε–δ sandbox (keep it, but prettier) -->
+    <section class="slide">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Definition Sandbox — ε and δ (Optional but Powerful)</h2>
+        <div class="soft text-lg">You control how close \(x\) must be (δ) to guarantee closeness in output (ε).</div>
+
+        <div class="twoCol mt-3">
           <div class="gwrap">
-            <div class="font-extrabold text-primary">ε–δ Visual</div>
-            <svg id="edSVG" viewBox="0 0 640 420" role="img" aria-label="Epsilon delta visualization"
-                 style="width:100%;height:auto;margin-top:8px;border:1px solid #e5e7eb;border-radius:12px;background:#ffffff"></svg>
-
-            <div class="edRow mt-2">
-              <span class="badge"><b>a</b>: <span class="mono">2</span></span>
-              <span class="badge"><b>L</b>: <span class="mono">4</span></span>
-              <span class="badge"><b>ε</b>: <span id="epsOut" class="mono"></span></span>
-              <span class="badge"><b>δ</b>: <span id="delOut" class="mono"></span></span>
+            <div class="callout text-lg mb-2">
+              We use \(f(x)=x^2\), \(a=2\), \(L=4\). Your goal: choose δ so that points stay inside the ε-band.
             </div>
 
-            <div class="edRow mt-2">
-              <label class="text-sm font-semibold">ε:</label>
-              <input id="eps" type="range" min="10" max="200" value="80">
-              <label class="text-sm font-semibold">δ:</label>
-              <input id="del" type="range" min="10" max="200" value="60">
-              <button id="suggestDelta" class="btn">Suggest δ</button>
+            <svg id="edSvg" viewBox="0 0 640 360" style="width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff"></svg>
+
+            <div class="gbar">
+              <div class="left">
+                <span class="badge"><b>ε</b>: <span id="epsOut" class="mono"></span></span>
+                <span class="badge"><b>δ</b>: <span id="delOut" class="mono"></span></span>
+              </div>
+              <div class="left">
+                <button class="btn" id="edSuggest">Suggest δ</button>
+              </div>
             </div>
 
-            <div id="edFb" class="mt-2 font-bold"></div>
+            <div class="gbar">
+              <div class="left">
+                <label class="text-sm font-extrabold text-primary">ε</label>
+                <input id="eps" type="range" min="10" max="200" value="80">
+                <label class="text-sm font-extrabold text-primary">δ</label>
+                <input id="del" type="range" min="10" max="200" value="60">
+              </div>
+              <span id="edFb" class="badge">Try it…</span>
+            </div>
           </div>
 
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">What to notice</h3>
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">What students should say</h3>
             <ul class="list-disc list-inside text-lg space-y-2">
-              <li>ε controls the <b>vertical</b> “target band” around \(L\).</li>
-              <li>δ controls the <b>horizontal</b> window around \(a\).</li>
-              <li>We need the curve inside the δ-window to stay inside the ε-band.</li>
+              <li>ε is a <b>vertical</b> accuracy requirement.</li>
+              <li>δ is a <b>horizontal</b> closeness requirement.</li>
+              <li>We are proving: “If x is close enough, then f(x) is accurate enough.”</li>
             </ul>
-            <div class="hint mt-3">
-              In AB, you mostly use the informal definition + tools. This sandbox makes the formal idea feel real.
+            <div class="callout mt-3 text-lg">
+              This is the formal version of the idea you used in Explorations 1–2.
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 7 • Tricky questions (conceptual traps) -->
+    <!-- 8 • Tiered Practice Generator (tabs: Foundation/Core/Challenge) -->
     <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">Tricky Questions (AP-Style Thinking)</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="small soft">Answer first. Then check and read the explanation.</div>
-        <div id="trickyList" class="grid md:grid-cols-2 gap-3 mt-3"></div>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button id="trickyCheck" class="btn primary">Check</button>
-          <button id="trickyCSV" class="btn">Export CSV</button>
-          <button id="trickyJSON" class="btn">Export JSON</button>
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Tiered Practice — Choose Your Level</h2>
+        <div class="soft text-lg">Pick a tier. Generate a new set. Check with explanations. Export results.</div>
+
+        <div class="tabbar mt-3" role="tablist" aria-label="Tier tabs">
+          <button class="tab" id="tierF" role="tab" aria-selected="true" data-tier="foundation">🧱 Foundation</button>
+          <button class="tab" id="tierC" role="tab" aria-selected="false" data-tier="core">🧠 Core</button>
+          <button class="tab" id="tierH" role="tab" aria-selected="false" data-tier="challenge">🔥 Challenge</button>
         </div>
-        <div id="trickyFb" class="mt-2 font-bold"></div>
-      </div>
-    </section>
 
-    <!-- 8 • Tool moves (algebra + special limits) -->
-    <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">When Substitution Fails: Your Tool Moves</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="threeCol">
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Tool 1: Factor & cancel</h3>
-            <div class="text-lg">
-              \[
-                \lim_{x\to 3}\frac{x^2-9}{x-3}
-              \]
+        <div class="card p-5 mt-3">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <div class="pill">Set score: <span id="pScore" class="mono">0/0</span></div>
+            <div class="flex flex-wrap gap-2">
+              <button class="btn" id="pNew">New set</button>
+              <button class="btn primary" id="pCheck">Check</button>
+              <button class="btn" id="pCSV">Export CSV</button>
+              <button class="btn" id="pJSON">Export JSON</button>
             </div>
-            <div class="mt-2 flex gap-2 flex-wrap items-center">
-              <input id="tool1" class="border rounded px-2 py-1 w-40" placeholder="value">
-              <button class="btn primary" id="tool1Check">Check</button>
-              <button class="btn" id="tool1Steps">Steps</button>
-            </div>
-            <div id="tool1Fb" class="mt-2 font-bold"></div>
-            <div id="tool1Box" class="mt-2"></div>
           </div>
 
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Tool 2: Rationalize</h3>
-            <div class="text-lg">
-              \[
-                \lim_{x\to 0}\frac{\sqrt{1+x}-1}{x}
-              \]
-            </div>
-            <div class="mt-2 flex gap-2 flex-wrap items-center">
-              <input id="tool2" class="border rounded px-2 py-1 w-40" placeholder="value">
-              <button class="btn primary" id="tool2Check">Check</button>
-              <button class="btn" id="tool2Steps">Steps</button>
-            </div>
-            <div id="tool2Fb" class="mt-2 font-bold"></div>
-            <div id="tool2Box" class="mt-2"></div>
-          </div>
-
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Tool 3: Special trig</h3>
-            <div class="text-lg">
-              \[
-                \lim_{x\to 0}\frac{\sin(5x)}{x}
-              \]
-            </div>
-            <div class="mt-2 flex gap-2 flex-wrap items-center">
-              <input id="tool3" class="border rounded px-2 py-1 w-40" placeholder="value">
-              <button class="btn primary" id="tool3Check">Check</button>
-              <button class="btn" id="tool3Steps">Steps</button>
-            </div>
-            <div id="tool3Fb" class="mt-2 font-bold"></div>
-            <div id="tool3Box" class="mt-2"></div>
-          </div>
+          <div id="pList" class="grid md:grid-cols-2 gap-3 mt-3"></div>
+          <div id="pFb" class="mt-2 font-extrabold"></div>
         </div>
       </div>
     </section>
 
-    <!-- 9 • AP MCQ practice -->
+    <!-- 9 • AP-style practice (original questions) + scrollboxes -->
     <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">AP Exam Practice — Multiple Choice</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="small soft">These are AP-style: some compute, some reasoning. Show work on paper.</div>
-        <div id="mcqList" class="grid md:grid-cols-2 gap-3 mt-3"></div>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button id="mcqNew" class="btn">New set</button>
-          <button id="mcqCheck" class="btn primary">Check</button>
-          <button id="mcqCSV" class="btn">Export CSV</button>
-          <button id="mcqJSON" class="btn">Export JSON</button>
-        </div>
-        <div id="mcqFb" class="mt-2 font-bold"></div>
-      </div>
-    </section>
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">AP-Style Practice — MCQ + Mini-FRQ</h2>
+        <div class="soft text-lg">Original AP-style items (not copied). Mix of algebraic, graphical, and reasoning skills.</div>
 
-    <!-- 10 • AP mini-FRQ -->
-    <section class="slide">
-      <h2 class="text-3xl font-extrabold text-primary mb-2">AP Exam Practice — Mini-FRQ</h2>
-      <div class="card p-5 w-full max-w-6xl text-left">
-        <div class="twoCol">
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">FRQ Prompt</h3>
-            <div class="text-lg">
-              Let
-              \[
-                f(x)=\begin{cases}
-                \dfrac{x^2-1}{x-1}, & x\ne 1\\[4pt]
-                7, & x=1
-                \end{cases}
-              \]
+        <div class="twoCol mt-3">
+          <div class="card p-5">
+            <div class="flex flex-wrap gap-2 items-center justify-between">
+              <h3 class="text-2xl font-bold text-primary">MCQ set</h3>
+              <div class="flex gap-2 flex-wrap">
+                <button class="btn" id="mcNew">New set</button>
+                <button class="btn primary" id="mcCheck">Check</button>
+                <button class="btn" id="mcCSV">CSV</button>
+                <button class="btn" id="mcJSON">JSON</button>
+              </div>
             </div>
-            <ol class="list-decimal list-inside text-lg space-y-2 mt-2">
-              <li>Find \(\lim_{x\to 1} f(x)\).</li>
-              <li>Find \(f(1)\).</li>
-              <li>Is \(f\) continuous at \(x=1\)? Explain.</li>
-              <li>Find a value of \(k\) that would make \(f\) continuous at \(x=1\) if we redefine \(f(1)=k\).</li>
-            </ol>
-            <div class="callout small mt-3">
-              <b>AP habit:</b> Write complete sentences for explanations.
-            </div>
+            <div id="mcList" class="grid gap-3 mt-3"></div>
+            <div id="mcFb" class="mt-2 font-extrabold"></div>
           </div>
 
-          <div class="card p-4">
-            <h3 class="text-xl font-bold text-primary mb-2">Your submission</h3>
+          <div class="card p-5">
+            <h3 class="text-2xl font-bold text-primary mb-2">Mini-FRQ (reasoning matters)</h3>
 
-            <div class="mt-2 flex flex-wrap gap-2 items-center">
-              <span class="pill">1) Limit:</span>
-              <input id="frq1" class="border rounded px-2 py-1 w-36" placeholder="value">
-              <span class="pill">2) f(1):</span>
-              <input id="frq2" class="border rounded px-2 py-1 w-36" placeholder="value">
-              <span class="pill">4) k:</span>
-              <input id="frq4" class="border rounded px-2 py-1 w-36" placeholder="value">
+            <div class="scrollbox">
+              <span class="scrollHint">Scroll ↕</span>
+              <div class="text-lg">
+                Let
+                \[
+                  f(x)=\begin{cases}
+                  \dfrac{x^2-1}{x-1}, & x\ne 1\\
+                  7, & x=1
+                  \end{cases}
+                \]
+                <ol class="list-decimal list-inside space-y-1 mt-2">
+                  <li>Find \(\lim_{x\to 1} f(x)\).</li>
+                  <li>Find \(f(1)\).</li>
+                  <li>Is \(f\) continuous at \(x=1\)? Explain clearly.</li>
+                  <li>Find \(k\) so redefining \(f(1)=k\) makes \(f\) continuous.</li>
+                </ol>
+              </div>
             </div>
 
-            <label class="block mt-3 text-sm font-semibold">3) Explanation (1–2 sentences)</label>
-            <textarea id="frq3" class="w-full border rounded p-2" rows="3"
-              placeholder="Not continuous because ..."></textarea>
+            <div class="mt-3 grid gap-2">
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="pill">1) Limit</span>
+                <input id="fr1" class="border rounded px-2 py-1 w-28">
+                <span class="pill">2) f(1)</span>
+                <input id="fr2" class="border rounded px-2 py-1 w-28">
+                <span class="pill">4) k</span>
+                <input id="fr4" class="border rounded px-2 py-1 w-28">
+              </div>
+              <label class="block text-sm font-extrabold text-primary">3) Explanation (1–2 sentences)</label>
+              <textarea id="fr3" class="w-full border rounded p-2" rows="3"
+                placeholder="Not continuous because ... (mention limit vs value)."></textarea>
 
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button id="frqCheck" class="btn primary">Check numeric parts</button>
-              <button id="frqReveal" class="btn">Reveal solution</button>
-              <button id="frqCSV" class="btn">Export CSV</button>
-              <button id="frqJSON" class="btn">Export JSON</button>
+              <div class="flex flex-wrap gap-2">
+                <button class="btn primary" id="frCheck">Check numeric</button>
+                <button class="btn" id="frReveal">Reveal</button>
+                <button class="btn" id="frCSV">CSV</button>
+                <button class="btn" id="frJSON">JSON</button>
+              </div>
+
+              <div id="frFb" class="mt-2 font-extrabold"></div>
+              <div id="frAns" class="mt-2"></div>
             </div>
-
-            <div id="frqFb" class="mt-2 font-bold"></div>
-            <div id="frqSol" class="mt-3"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 11 • Exit ticket -->
+    <!-- 10 • Boss Fight Challenge (end) -->
     <section class="slide">
-      <h2 class="text-4xl font-extrabold text-primary mb-2">Exit Ticket (Evidence of Understanding)</h2>
-      <div class="card p-5 w-full max-w-5xl text-left">
-        <label class="block text-sm font-semibold">1) In your own words: what does \(\lim_{x\to a} f(x)\) mean?</label>
-        <textarea id="exit1" class="w-full border rounded p-2" rows="2"></textarea>
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Boss Fight — One Question to Rule Them All</h2>
+        <div class="soft text-lg">Pick a difficulty. Build a streak. Hints available. Exports included.</div>
 
-        <label class="block text-sm font-semibold mt-3">2) Give one example where the limit exists but \(f(a)\) is different.</label>
-        <textarea id="exit2" class="w-full border rounded p-2" rows="2"></textarea>
+        <div class="card p-5 mt-3">
+          <div class="flex flex-wrap gap-2 items-center">
+            <span class="pill">Difficulty</span>
+            <select id="bfTier" class="border rounded px-2 py-1">
+              <option value="foundation">Foundation</option>
+              <option value="core" selected>Core</option>
+              <option value="challenge">Challenge</option>
+            </select>
+            <button class="btn" id="bfNew">New boss</button>
+            <span class="pill">Streak: <span id="bfStreak" class="mono">0</span></span>
+            <button class="btn" id="bfHint">Hint</button>
+            <button class="btn" id="bfCSV">CSV</button>
+            <button class="btn" id="bfJSON">JSON</button>
+          </div>
 
-        <label class="block text-sm font-semibold mt-3">3) One question you still have.</label>
-        <textarea id="exit3" class="w-full border rounded p-2" rows="2"></textarea>
+          <div class="mt-3 scrollbox" id="bfStem">
+            <span class="scrollHint">Scroll ↕</span>
+          </div>
 
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button id="exitCSV" class="btn">Export CSV</button>
-          <button id="exitJSON" class="btn">Export JSON</button>
+          <div class="mt-3 flex flex-wrap gap-2 items-center">
+            <span class="pill">Answer</span>
+            <input id="bfAns" class="border rounded px-3 py-2 w-60" placeholder="number / DNE / ±∞">
+            <button class="btn primary" id="bfCheck">Check</button>
+          </div>
+
+          <div id="bfHintBox" class="mt-3"></div>
+          <div id="bfFb" class="mt-2 font-extrabold"></div>
         </div>
+      </div>
+    </section>
 
-        <div class="hint mt-4">
-          <b>Next lesson:</b> Limit Laws + Algebraic Techniques (factor, rationalize, trig limits).
+    <!-- 11 • Exit Ticket -->
+    <section class="slide">
+      <div class="wrap">
+        <h2 class="text-4xl font-extrabold text-primary">Exit Ticket</h2>
+        <div class="card p-5 mt-3">
+          <label class="block text-sm font-extrabold text-primary">1) In your own words, what does \(\lim_{x\to a}f(x)=L\) mean?</label>
+          <textarea id="e1" class="w-full border rounded p-2" rows="2"></textarea>
+
+          <label class="block text-sm font-extrabold text-primary mt-3">2) Give an example where the limit exists but \(f(a)\) is different.</label>
+          <textarea id="e2" class="w-full border rounded p-2" rows="2"></textarea>
+
+          <label class="block text-sm font-extrabold text-primary mt-3">3) One question you still have.</label>
+          <textarea id="e3" class="w-full border rounded p-2" rows="2"></textarea>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="btn" id="eCSV">Export CSV</button>
+            <button class="btn" id="eJSON">Export JSON</button>
+          </div>
+
+          <div class="callout mt-4 text-lg">
+            <b>Next:</b> Limit Laws + Techniques (factor, rationalize, trig limits) → faster + more reliable.
+          </div>
         </div>
       </div>
     </section>
@@ -547,7 +881,7 @@
 <div id="controls" role="group" aria-label="Slideshow controls">
   <button id="prev" title="Previous (←)">&laquo;</button>
   <button id="fs" title="Toggle Fullscreen (F)">⤢</button>
-  <div id="counter">1 / 12</div>
+  <div id="counter">1 / 1</div>
   <button id="next" title="Next (→)">&raquo;</button>
 </div>
 <div id="progress"></div>
@@ -558,48 +892,10 @@
   <div id="popBody"></div>
 </div>
 
-<script>
-/* ===================== Setup: brand, glossary, deck ===================== */
-document.getElementById("brandLine").textContent =
-  (window.BRAND?.schoolName ? window.BRAND.schoolName + " — " : "") + "AP Calculus AB";
-
-(function applyBrandToDeck(){
-  const c = window.BRAND?.colors;
-  if(!c) return;
-  const root = document.documentElement.style;
-  if(c.primary) root.setProperty("--primary", c.primary);
-  if(c.accent)  root.setProperty("--accent",  c.accent);
-})();
-
-const glossary = {
-  lim:  "<strong>Limit</strong>: the value \(f(x)\) approaches as \(x\) approaches \(a\).",
-  lr:   "<strong>Left/right limits</strong>: compare \(\lim_{x\\to a^-}f(x)\) and \(\lim_{x\\to a^+}f(x)\).",
-  dne:  "<strong>DNE</strong>: does not exist (mismatch, unbounded, or oscillating).",
-  rem:  "<strong>Removable discontinuity</strong>: a “hole” where the limit exists (often fixable by redefining \(f(a)\)).",
-  jump: "<strong>Jump discontinuity</strong>: left and right limits exist but are different.",
-  inf:  "<strong>Infinite behavior</strong>: function grows without bound near \(a\) (vertical asymptote)."
-};
-
-const Deck = window.DeckEngine.initDeck({
-  deckTitle: "APCalcAB_L1_Limits_Power",
-  glossary
-});
-
-// Teacher notes toggles
-function toggle(id){ const el=document.getElementById(id); el.classList.toggle("hidden"); Deck.renderMath(el); }
-document.getElementById("toggleTeacher1").addEventListener("click",()=>toggle("t1"));
-document.getElementById("toggleTeacher2").addEventListener("click",()=>toggle("t2"));
-document.getElementById("toggleTeacher4").addEventListener("click",()=>toggle("t4"));
-
-/* ===================== Slide 3: formal definition toggle ===================== */
-document.getElementById("showFormal").addEventListener("click", ()=>{
-  const box = document.getElementById("formalBox");
-  box.classList.toggle("hidden");
-  Deck.renderMath(box);
-});
-
-/* ===================== Graph Lab: SVG engine ===================== */
+<script defer>
+/* ===================== Helpers ===================== */
 function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+function nearly(a,b,eps=1e-3){ return Math.abs(a-b)<=eps; }
 function fmt(v){
   if (v === null) return "undef";
   if (v === Infinity) return "+∞";
@@ -609,65 +905,71 @@ function fmt(v){
   if (a >= 1000) return (v>0?"+":"") + v.toExponential(2);
   return (Math.round(v*10000)/10000).toString();
 }
-function nearly(a,b,eps=1e-3){ return Math.abs(a-b) <= eps; }
-
-const Scenarios = {
-  // Removable: near a=1 behaves like x+1, but f(1)=7
-  rem: {
-    name: "Removable hole",
-    a: 1,
-    xMin: -1, xMax: 3, yMin: -1, yMax: 7,
-    fn: (x)=> (x===1 ? 7 : (x*x-1)/(x-1)),
-    draw: { hole: {x:1, y:2}, filled:{x:1,y:7} },
-    limit: 2,
-    left: 2, right: 2,
-    exists: true,
-    note: "Limit exists (2), but function value differs (7)."
-  },
-  // Jump at a=1: left x+1, right 3
-  jump: {
-    name: "Jump",
-    a: 1,
-    xMin: -1, xMax: 3, yMin: -1, yMax: 5,
-    fn: (x)=> (x < 1 ? x+1 : 3),
-    draw: { openLeft:{x:1,y:2}, filled:{x:1,y:3} },
-    limit: NaN,
-    left: 2, right: 3,
-    exists: false,
-    note: "Left and right limits differ → DNE."
-  },
-  // Infinite at a=2: 1/(x-2)
-  inf: {
-    name: "Infinite",
-    a: 2,
-    xMin: 0, xMax: 4, yMin: -6, yMax: 6,
-    fn: (x)=> (x===2 ? null : 1/(x-2)),
-    draw: { asymptoteX: 2 },
-    limit: NaN,
-    left: -Infinity, right: Infinity,
-    exists: false,
-    note: "Unbounded behavior (vertical asymptote) → two-sided limit DNE."
-  },
-  // Oscillation at a=0: sin(1/x)
-  osc: {
-    name: "Oscillation",
-    a: 0,
-    xMin: -0.25, xMax: 0.25, yMin: -1.2, yMax: 1.2,
-    fn: (x)=> (x===0 ? null : Math.sin(1/x)),
-    draw: { },
-    limit: NaN,
-    left: NaN, right: NaN,
-    exists: false,
-    note: "Oscillates, no single approach value → DNE."
+function normalizeInput(s){
+  const t=(s||"").trim().toUpperCase();
+  if(!t) return "";
+  if(t==="DNE") return "DNE";
+  if(t==="+∞"||t==="∞"||t==="+INF"||t==="INF") return "+∞";
+  if(t==="−∞"||t=="-∞"||t==="NEGINF") return "−∞";
+  if(/^[+-]?\d+(\.\d+)?$/.test(t)) return t;
+  if(/^[+-]?\d+\s*\/\s*\d+$/.test(t)){
+    const [a,b]=t.split("/").map(x=>Number(x.trim()));
+    if(b!==0) return String(a/b);
   }
-};
+  return t;
+}
 
+/* ===================== Brand assets ===================== */
+function resolveAsset(p){
+  if(!p) return "";
+  if(/^https?:\/\//.test(p)) return p;
+  if(p.startsWith("../") || p.startsWith("/")) return p;
+  // brand.js likely uses "assets/..", but lesson is inside /ab/
+  if(p.startsWith("assets/")) return "../" + p;
+  return p;
+}
+const BRAND = window.BRAND || {};
+document.getElementById("brandLine").textContent =
+  (BRAND.schoolName ? BRAND.schoolName + " — " : "") + "AP Calculus AB";
+
+document.getElementById("bannerTop").style.backgroundImage = `url('${resolveAsset(BRAND.banner || "assets/banner.jpg")}')`;
+const logo = document.getElementById("logoTop");
+logo.src = resolveAsset(BRAND.logo || "assets/logo.svg");
+
+/* Apply brand colors if provided */
+(function applyBrand(){
+  if(!BRAND.colors) return;
+  const s=document.documentElement.style;
+  s.setProperty("--primary", BRAND.colors.primary || "#6C1D45");
+  s.setProperty("--primary2", BRAND.colors.primary2 || "#8B2450");
+  s.setProperty("--accent", BRAND.colors.accent || "#C7A34F");
+  s.setProperty("--accent2", BRAND.colors.accent2 || "#E4D4A8");
+})();
+
+/* ===================== Deck init (glossary chips available) ===================== */
+const glossary = {
+  lim:  "<strong>Limit</strong>: the value \(f(x)\) approaches as \(x\) approaches \(a\).",
+  lr:   "<strong>Left/right limits</strong>: compare \(\lim_{x\\to a^-}f(x)\) and \(\lim_{x\\to a^+}f(x)\).",
+  dne:  "<strong>DNE</strong>: does not exist (mismatch, unbounded, or oscillating).",
+  rem:  "<strong>Removable discontinuity</strong>: a “hole” where the limit exists (fixable by redefining \(f(a)\)).",
+  jump: "<strong>Jump discontinuity</strong>: left and right limits exist but are different.",
+  inf:  "<strong>Infinite behavior</strong>: function grows without bound near \(a\) (vertical asymptote)."
+};
+const Deck = window.DeckEngine.initDeck({ deckTitle:"AB_L1_Limits_ExplorationFirst", glossary });
+
+/* Formal definition toggle */
+document.getElementById("showFormal").addEventListener("click", ()=>{
+  const box=document.getElementById("formalBox");
+  box.classList.toggle("hidden");
+  Deck.renderMath(box);
+});
+
+/* ===================== SVG mini-plot toolkit ===================== */
 function svgEl(tag, attrs={}){
   const el=document.createElementNS("http://www.w3.org/2000/svg", tag);
   for(const k in attrs) el.setAttribute(k, attrs[k]);
   return el;
 }
-
 function makeMapper(W,H,xMin,xMax,yMin,yMax){
   const pad=44;
   const xScale=(W-2*pad)/(xMax-xMin);
@@ -676,802 +978,969 @@ function makeMapper(W,H,xMin,xMax,yMin,yMax){
   const Y=(y)=> H-pad - (y-yMin)*yScale;
   return {W,H,pad,X,Y,xMin,xMax,yMin,yMax};
 }
-
 function drawAxes(svg, m){
-  const g=svgEl("g");
-  // Border grid lightly
-  g.appendChild(svgEl("rect",{x:0,y:0,width:m.W,height:m.H,fill:"#fff"}));
-
-  // Axes
+  svg.appendChild(svgEl("rect",{x:0,y:0,width:m.W,height:m.H,fill:"#fff"}));
   const x0 = (m.yMin<=0 && m.yMax>=0) ? m.Y(0) : m.Y(m.yMin);
   const y0 = (m.xMin<=0 && m.xMax>=0) ? m.X(0) : m.X(m.xMin);
-
-  g.appendChild(svgEl("line",{x1:m.pad,y1:x0,x2:m.W-m.pad,y2:x0,stroke:"#0f172a","stroke-width":"1"}));
-  g.appendChild(svgEl("line",{x1:y0,y1:m.pad,x2:y0,y2:m.H-m.pad,stroke:"#0f172a","stroke-width":"1"}));
-
-  // Ticks (simple)
-  const ticks=6;
-  for(let i=0;i<=ticks;i++){
-    const xt = m.xMin + (m.xMax-m.xMin)*i/ticks;
-    const X = m.X(xt);
-    g.appendChild(svgEl("line",{x1:X,y1:x0-4,x2:X,y2:x0+4,stroke:"#64748b","stroke-width":"1"}));
-  }
-  for(let i=0;i<=ticks;i++){
-    const yt = m.yMin + (m.yMax-m.yMin)*i/ticks;
-    const Y = m.Y(yt);
-    g.appendChild(svgEl("line",{x1:y0-4,y1:Y,x2:y0+4,y2:Y,stroke:"#64748b","stroke-width":"1"}));
-  }
-
-  svg.appendChild(g);
+  svg.appendChild(svgEl("line",{x1:m.pad,y1:x0,x2:m.W-m.pad,y2:x0,stroke:"#0f172a","stroke-width":"1"}));
+  svg.appendChild(svgEl("line",{x1:y0,y1:m.pad,x2:y0,y2:m.H-m.pad,stroke:"#0f172a","stroke-width":"1"}));
 }
-
-function plotFunction(svg, m, fn, breaks=[]){
-  // sample points
-  const N=900;
-  let d="";
-  let started=false;
-  for(let i=0;i<=N;i++){
-    const x = m.xMin + (m.xMax-m.xMin)*i/N;
-
-    // break at specified x values (asymptotes, holes)
-    let shouldBreak=false;
-    for(const bx of breaks){
-      if (Math.abs(x-bx) < (m.xMax-m.xMin)/N*2) shouldBreak=true;
-    }
-
-    let y = fn(x);
-    if (y===null || !Number.isFinite(y) || y>1e6 || y<-1e6) { shouldBreak=true; }
-
-    if (shouldBreak){
-      started=false;
-      continue;
-    }
-
-    // clip y
-    y = clamp(y, m.yMin, m.yMax);
-
-    const X=m.X(x), Y=m.Y(y);
-    if(!started){ d += `M ${X} ${Y} `; started=true; }
-    else d += `L ${X} ${Y} `;
-  }
-
-  const path=svgEl("path",{d,fill:"none",stroke:"#6C1D45","stroke-width":"3","stroke-linecap":"round"});
-  svg.appendChild(path);
-}
-
-function drawPoint(svg, m, x, y, style={}){
-  const cx=m.X(x), cy=m.Y(y);
-  const c=svgEl("circle",{
-    cx, cy,
-    r: style.r || 6,
-    fill: style.fill || "#C7A34F",
-    stroke: style.stroke || "#111827",
-    "stroke-width": style.sw || 2
-  });
-  svg.appendChild(c);
-  return c;
-}
-
-function drawOpenCircle(svg, m, x, y){
-  const cx=m.X(x), cy=m.Y(y);
-  svg.appendChild(svgEl("circle",{cx,cy,r:7,fill:"#ffffff",stroke:"#111827","stroke-width":"2"}));
-}
-
-function drawVLine(svg, m, x, color="#94a3b8"){
+function drawVLine(svg, m, x, color="#cbd5e1"){
   const X=m.X(x);
   svg.appendChild(svgEl("line",{x1:X,y1:m.pad,x2:X,y2:m.H-m.pad,stroke:color,"stroke-width":"2","stroke-dasharray":"6 6"}));
 }
-
-function setBadge(el, kind, text){
-  el.className = "badge " + (kind==="ok"?"ok":kind==="warn"?"warn":"bad");
-  el.textContent = text;
+function drawHLine(svg, m, y, color="#cbd5e1"){
+  const Y=m.Y(y);
+  svg.appendChild(svgEl("line",{x1:m.pad,y1:Y,x2:m.W-m.pad,y2:Y,stroke:color,"stroke-width":"2","stroke-dasharray":"6 6"}));
+}
+function drawPoint(svg, m, x, y, style={}){
+  const cx=m.X(x), cy=m.Y(y);
+  svg.appendChild(svgEl("circle",{
+    cx, cy,
+    r: style.r || 5,
+    fill: style.fill || "#C7A34F",
+    stroke: style.stroke || "#111827",
+    "stroke-width": style.sw || 2
+  }));
+}
+function drawOpenCircle(svg, m, x, y){
+  const cx=m.X(x), cy=m.Y(y);
+  svg.appendChild(svgEl("circle",{cx,cy,r:7,fill:"#fff",stroke:"#111827","stroke-width":"2"}));
+}
+function plot(svg, m, fn, breaks=[]){
+  const N=700;
+  let d="", started=false;
+  for(let i=0;i<=N;i++){
+    const x = m.xMin + (m.xMax-m.xMin)*i/N;
+    let br=false;
+    for(const bx of breaks){
+      if (Math.abs(x-bx) < (m.xMax-m.xMin)/N*2) br=true;
+    }
+    let y = fn(x);
+    if (y===null || !Number.isFinite(y) || Math.abs(y)>1e6) br=true;
+    if (br){ started=false; continue; }
+    y=clamp(y, m.yMin, m.yMax);
+    const X=m.X(x), Y=m.Y(y);
+    if(!started){ d+=`M ${X} ${Y} `; started=true; }
+    else d+=`L ${X} ${Y} `;
+  }
+  svg.appendChild(svgEl("path",{d,fill:"none",stroke:"var(--primary)","stroke-width":"3","stroke-linecap":"round"}));
 }
 
-/* ===================== Graph Lab wiring ===================== */
-const scSel = document.getElementById("scSel");
-const graphSVG = document.getElementById("graphSVG");
-const xSlider = document.getElementById("xSlider");
-const aOut = document.getElementById("aOut");
-const xOut = document.getElementById("xOut");
-const yOut = document.getElementById("yOut");
-const existBadge = document.getElementById("existBadge");
-const predL = document.getElementById("predL");
-const predWhy = document.getElementById("predWhy");
-const predFb = document.getElementById("predFb");
-const ansBox = document.getElementById("ansBox");
+/* ===================== Exploration 1 ===================== */
+const ex1 = {
+  a:1,
+  // “mystery-ish” function: behaves like x+1 near 1, but value at 1 is different
+  fn:(x)=> (x===1 ? 7 : (x*x-1)/(x-1)),
+  truth:2
+};
 
-let active = "rem";
-let mapper = null;
-let movingDot = null;
+const ex1svg = document.getElementById("ex1svg");
+const ex1z = document.getElementById("ex1z");
+const ex1x = document.getElementById("ex1x");
+const ex1y = document.getElementById("ex1y");
+const ex1table = document.getElementById("ex1table");
+const ex1badge = document.getElementById("ex1badge");
 
-function currentX(){
-  const s = Number(xSlider.value)/1000; // [-1,1]
-  const sc = Scenarios[active];
-  // choose range relative to scenario
-  const range = (sc.xMax - sc.xMin) * 0.15;
-  let x = sc.a + s*range;
-  // Avoid exact a for undefined points
-  if (Math.abs(x - sc.a) < 1e-6) x = sc.a + (s>=0?1:-1)*1e-4;
+let ex1side = -1; // -1 left, +1 right
+function ex1xval(){
+  const n = Number(ex1z.value);
+  const h = Math.pow(10, -n);
+  // take a couple of values based on "side"
+  return ex1.a + ex1side * (2*h);
+}
+function ex1render(){
+  ex1svg.innerHTML="";
+  const m=makeMapper(640,360, -0.5, 2.5, -0.5, 7.5);
+  drawAxes(ex1svg,m);
+  drawVLine(ex1svg,m,ex1.a,"#e2e8f0");
+  plot(ex1svg,m, (x)=>ex1.fn(x), [1]);
+
+  // hole at (1,2), filled at (1,7)
+  drawOpenCircle(ex1svg,m,1,2);
+  drawPoint(ex1svg,m,1,7,{fill:"#111827",stroke:"#111827",r:6});
+
+  const x = ex1xval();
+  const y = ex1.fn(x);
+  ex1x.textContent = fmt(x);
+  ex1y.textContent = fmt(y);
+  drawPoint(ex1svg,m,x,clamp(y,-0.5,7.5),{fill:"var(--accent)",stroke:"#111827",r:6});
+
+  // table: both sides
+  const n=Number(ex1z.value);
+  let html = `<thead><tr><th>x (left)</th><th>f(x)</th><th>x (right)</th><th>f(x)</th></tr></thead><tbody>`;
+  for(let k=1;k<=Math.min(4,n+1);k++){
+    const h=Math.pow(10,-k);
+    const xl=1-h, xr=1+h;
+    html += `<tr><td>${xl.toFixed(6)}</td><td>${Number(ex1.fn(xl)).toFixed(6)}</td><td>${xr.toFixed(6)}</td><td>${Number(ex1.fn(xr)).toFixed(6)}</td></tr>`;
+  }
+  html += `</tbody>`;
+  ex1table.innerHTML=html;
+  ex1badge.className="badge warn";
+  ex1badge.textContent="Observe → predict";
+}
+ex1z.addEventListener("input", ex1render);
+document.getElementById("ex1Left").addEventListener("click", ()=>{ex1side=-1; ex1render();});
+document.getElementById("ex1Right").addEventListener("click", ()=>{ex1side=+1; ex1render();});
+document.getElementById("ex1check").addEventListener("click", ()=>{
+  const u=Number(normalizeInput(document.getElementById("ex1guess").value));
+  const fb=document.getElementById("ex1fb");
+  if(!Number.isFinite(u)){ fb.textContent="Enter a number."; fb.style.color="#b91c1c"; return; }
+  const ok=nearly(u, ex1.truth, 1e-3);
+  fb.textContent = ok ? "✅ Yes — the nearby outputs chase 2." : "❌ Not quite. Look at the left/right table values.";
+  fb.style.color = ok ? "#15803d" : "#b91c1c";
+  if(ok) Deck.confetti();
+});
+document.getElementById("ex1reveal").addEventListener("click", ()=>{
+  const box=document.getElementById("ex1ans");
+  box.innerHTML = `<div class="hint text-lg">
+    Near \(x=1\), \(\dfrac{x^2-1}{x-1}=\dfrac{(x-1)(x+1)}{x-1}=x+1\) (for \(x\ne 1\)). So the chased value is \(2\).
+    <br><span class="soft">But at exactly \(x=1\), the function is defined as 7 — “near” and “at” can differ.</span>
+  </div>`;
+  Deck.renderMath(box);
+});
+ex1render();
+
+/* ===================== Exploration 2 (jump) ===================== */
+const ex2 = {
+  a:1,
+  fn:(x)=> (x < 1 ? x+1 : 3),
+  left:2,
+  right:3
+};
+const ex2svg = document.getElementById("ex2svg");
+const ex2s = document.getElementById("ex2s");
+const ex2x = document.getElementById("ex2x");
+const ex2y = document.getElementById("ex2y");
+const ex2badge = document.getElementById("ex2badge");
+
+function ex2xval(){
+  const sc=Number(ex2s.value)/1000;
+  const range=0.7;
+  let x=ex2.a + sc*range;
+  if (Math.abs(x-ex2.a)<1e-6) x = ex2.a + (sc>=0?1:-1)*1e-4;
   return x;
 }
+function ex2render(){
+  ex2svg.innerHTML="";
+  const m=makeMapper(640,360, -0.5, 2.5, -0.5, 4.5);
+  drawAxes(ex2svg,m);
+  drawVLine(ex2svg,m,1,"#e2e8f0");
+  plot(ex2svg,m,(x)=>ex2.fn(x),[1]);
+
+  // open circle at left endpoint value (2)
+  drawOpenCircle(ex2svg,m,1,2);
+  drawPoint(ex2svg,m,1,3,{fill:"#111827",stroke:"#111827",r:6});
+
+  const x=ex2xval(), y=ex2.fn(x);
+  ex2x.textContent=fmt(x);
+  ex2y.textContent=fmt(y);
+  drawPoint(ex2svg,m,x,y,{fill:"var(--accent)",stroke:"#111827",r:6});
+
+  ex2badge.className="badge bad";
+  ex2badge.textContent="Left near ≠ right near";
+}
+ex2s.addEventListener("input", ex2render);
+document.getElementById("ex2Left").addEventListener("click", ()=>{ex2s.value=-950; ex2render();});
+document.getElementById("ex2Right").addEventListener("click", ()=>{ex2s.value=950; ex2render();});
+document.getElementById("ex2check").addEventListener("click", ()=>{
+  const sel=(document.querySelector('input[name="ex2q"]:checked')||{}).value;
+  const fb=document.getElementById("ex2fb");
+  if(!sel){ fb.textContent="Choose an option."; fb.style.color="#b91c1c"; return; }
+  const ok = (sel==="C");
+  fb.textContent = ok ? "✅ Correct. Left and right chase different values → no single two-sided value." : "❌ Not quite. Compare left-near vs right-near.";
+  fb.style.color = ok ? "#15803d" : "#b91c1c";
+  if(ok) Deck.confetti();
+});
+document.getElementById("ex2reveal").addEventListener("click", ()=>{
+  const box=document.getElementById("ex2ans");
+  box.innerHTML = `<div class="hint text-lg">
+    As \(x\to 1^-\), \(g(x)\to 2\). As \(x\to 1^+\), \(g(x)\to 3\). Since these differ, there is no single two-sided value.
+  </div>`;
+  Deck.renderMath(box);
+});
+ex2render();
+
+/* ===================== Graph Lab scenarios (tabs) ===================== */
+const Scenarios = {
+  rem: { name:"Hole (removable)", a:1, xMin:-1, xMax:3, yMin:-1, yMax:7,
+    fn:(x)=> (x===1?7:(x*x-1)/(x-1)),
+    draw:{hole:{x:1,y:2}, filled:{x:1,y:7}},
+    truth:{L:2,R:2,T:2, exists:true, note:"Limit exists; value at a can differ."}
+  },
+  jump: { name:"Jump", a:1, xMin:-1, xMax:3, yMin:-1, yMax:5,
+    fn:(x)=> (x<1?x+1:3),
+    draw:{openLeft:{x:1,y:2}, filled:{x:1,y:3}},
+    truth:{L:2,R:3,T:"DNE", exists:false, note:"Left ≠ right → DNE."}
+  },
+  inf: { name:"Asymptote", a:2, xMin:0, xMax:4, yMin:-6, yMax:6,
+    fn:(x)=> (x===2?null:1/(x-2)),
+    draw:{asymptoteX:2},
+    truth:{L:"−∞",R:"+∞",T:"DNE", exists:false, note:"Unbounded → DNE."}
+  },
+  osc: { name:"Oscillation", a:0, xMin:-0.25, xMax:0.25, yMin:-1.2, yMax:1.2,
+    fn:(x)=> (x===0?null:Math.sin(1/x)),
+    draw:{},
+    truth:{L:"DNE",R:"DNE",T:"DNE", exists:false, note:"Oscillates → no single value."}
+  }
+};
+let activeScn="rem";
+const gSvg=document.getElementById("gSvg");
+const gSlider=document.getElementById("gSlider");
+const gA=document.getElementById("gA");
+const gX=document.getElementById("gX");
+const gY=document.getElementById("gY");
+const gExist=document.getElementById("gExist");
+const gL=document.getElementById("gL");
+const gR=document.getElementById("gR");
+const gT=document.getElementById("gT");
 
 function scenarioBreaks(sc){
   const b=[];
-  if (sc.draw?.asymptoteX !== undefined) b.push(sc.draw.asymptoteX);
-  // also break at hole x
-  if (sc.draw?.hole) b.push(sc.draw.hole.x);
+  if(sc.draw?.asymptoteX!==undefined) b.push(sc.draw.asymptoteX);
+  if(sc.draw?.hole) b.push(sc.draw.hole.x);
   return b;
 }
-
-function rebuildGraph(){
-  const sc = Scenarios[active];
-  graphSVG.innerHTML = "";
-  mapper = makeMapper(640,420, sc.xMin, sc.xMax, sc.yMin, sc.yMax);
-
-  drawAxes(graphSVG, mapper);
-
-  // special line at a
-  drawVLine(graphSVG, mapper, sc.a, "#cbd5e1");
-
-  // asymptote line if exists
-  if (sc.draw?.asymptoteX !== undefined) drawVLine(graphSVG, mapper, sc.draw.asymptoteX, "#fb923c");
-
-  plotFunction(graphSVG, mapper, sc.fn, scenarioBreaks(sc));
-
-  // special points
-  if (sc.draw?.hole) drawOpenCircle(graphSVG, mapper, sc.draw.hole.x, sc.draw.hole.y);
-  if (sc.draw?.openLeft) drawOpenCircle(graphSVG, mapper, sc.draw.openLeft.x, sc.draw.openLeft.y);
-  if (sc.draw?.filled) drawPoint(graphSVG, mapper, sc.draw.filled.x, sc.draw.filled.y, {fill:"#111827", stroke:"#111827", r:6});
-
-  // moving dot
-  const x = currentX();
-  const y = sc.fn(x);
-  const yClamped = (y===null || !Number.isFinite(y)) ? null : clamp(y, sc.yMin, sc.yMax);
-  movingDot = (yClamped===null)
-    ? drawPoint(graphSVG, mapper, x, 0, {fill:"#ef4444", stroke:"#ef4444", r:6})
-    : drawPoint(graphSVG, mapper, x, yClamped, {fill:"#C7A34F", stroke:"#111827", r:6});
-
-  // labels
-  aOut.textContent = fmt(sc.a);
-  updateReadout();
+function gCurrentX(){
+  const sc=Scenarios[activeScn];
+  const s=Number(gSlider.value)/1000;
+  const range=(sc.xMax-sc.xMin)*0.15;
+  let x=sc.a + s*range;
+  if(Math.abs(x-sc.a)<1e-6) x=sc.a + (s>=0?1:-1)*1e-4;
+  return x;
 }
-
-function updateReadout(){
-  const sc = Scenarios[active];
-  const x = currentX();
-  const y = sc.fn(x);
-
-  xOut.textContent = fmt(x);
-  yOut.textContent = fmt(y);
-
-  // Update moving dot position
-  if (movingDot && mapper){
-    const yClamped = (y===null || !Number.isFinite(y)) ? null : clamp(y, sc.yMin, sc.yMax);
-    movingDot.setAttribute("cx", mapper.X(x));
-    movingDot.setAttribute("cy", mapper.Y(yClamped===null ? 0 : yClamped));
-    movingDot.setAttribute("fill", (yClamped===null) ? "#ef4444" : "#C7A34F");
-    movingDot.setAttribute("stroke", (yClamped===null) ? "#ef4444" : "#111827");
-  }
-
-  // Existence badge (based on scenario truth)
-  if (sc.exists){
-    setBadge(existBadge, "ok", "Limit exists (left = right)");
+function gDraw(){
+  const sc=Scenarios[activeScn];
+  gSvg.innerHTML="";
+  const m=makeMapper(640,360, sc.xMin, sc.xMax, sc.yMin, sc.yMax);
+  drawAxes(gSvg,m);
+  drawVLine(gSvg,m,sc.a,"#e2e8f0");
+  if(sc.draw?.asymptoteX!==undefined) drawVLine(gSvg,m,sc.draw.asymptoteX,"#fb923c");
+  plot(gSvg,m,sc.fn, scenarioBreaks(sc));
+  if(sc.draw?.hole) drawOpenCircle(gSvg,m,sc.draw.hole.x, sc.draw.hole.y);
+  if(sc.draw?.openLeft) drawOpenCircle(gSvg,m,sc.draw.openLeft.x, sc.draw.openLeft.y);
+  if(sc.draw?.filled) drawPoint(gSvg,m,sc.draw.filled.x, sc.draw.filled.y, {fill:"#111827",stroke:"#111827",r:6});
+  const x=gCurrentX();
+  const y=sc.fn(x);
+  gA.textContent=fmt(sc.a);
+  gX.textContent=fmt(x);
+  gY.textContent=fmt(y);
+  drawPoint(gSvg,m,x, clamp((y===null||!Number.isFinite(y))?0:y, sc.yMin, sc.yMax), {fill:"var(--accent)",stroke:"#111827",r:6});
+  // show truth badges
+  gL.textContent = String(sc.truth.L);
+  gR.textContent = String(sc.truth.R);
+  gT.textContent = String(sc.truth.T);
+  if(sc.truth.exists){
+    gExist.className="badge ok"; gExist.textContent="Limit exists (left = right)";
   } else {
-    // differentiate reasons
-    if (active==="jump") setBadge(existBadge, "bad", "DNE: left ≠ right");
-    else if (active==="inf") setBadge(existBadge, "bad", "DNE: unbounded near a");
-    else if (active==="osc") setBadge(existBadge, "bad", "DNE: oscillation");
-    else setBadge(existBadge, "warn", "Not sure");
+    gExist.className="badge bad"; gExist.textContent="Limit DNE (reason depends)";
   }
 }
+gSlider.addEventListener("input", gDraw);
+document.getElementById("gLeft").addEventListener("click", ()=>{ gSlider.value=-950; gDraw(); });
+document.getElementById("gRight").addEventListener("click", ()=>{ gSlider.value=950; gDraw(); });
 
-function normalizeInput(s){
-  const t=(s||"").trim().toUpperCase();
-  if (!t) return "";
-  if (t==="DNE") return "DNE";
-  if (t==="INF" || t==="+INF" || t==="∞" || t==="+∞") return "+∞";
-  if (t==="−∞" || t=="-∞" || t==="NEGINF") return "−∞";
-  // accept fractions
-  if (/^[+-]?\d+(\.\d+)?$/.test(t)) return t;
-  if (/^[+-]?\d+\s*\/\s*\d+$/.test(t)){
-    const [a,b]=t.split("/").map(x=>Number(x.trim()));
-    if (b!==0) return String(a/b);
-  }
-  return t;
+function setScenario(key){
+  activeScn=key;
+  // tab selection
+  document.querySelectorAll('.tabbar [role="tab"][data-scn]').forEach(b=>{
+    b.setAttribute("aria-selected", b.dataset.scn===key ? "true" : "false");
+  });
+  // reset inputs
+  document.getElementById("uLeft").value="";
+  document.getElementById("uRight").value="";
+  document.getElementById("uTwo").value="";
+  document.getElementById("uWhy").value="";
+  document.getElementById("gFb").textContent="";
+  document.getElementById("gAns").innerHTML="";
+  gSlider.value=-700;
+  gDraw();
 }
+document.querySelectorAll('[data-scn]').forEach(btn=>{
+  btn.addEventListener("click", ()=>setScenario(btn.dataset.scn));
+});
+setScenario("rem");
 
-function correctLimitString(sc){
-  if (!sc.exists) return "DNE";
-  return String(sc.limit);
+function truthStr(v){ return String(v); }
+function eqUser(user, truth){
+  const u=normalizeInput(user);
+  const t=normalizeInput(truthStr(truth));
+  if(t==="DNE") return u==="DNE";
+  if(t==="+∞") return u==="+∞";
+  if(t==="−∞") return u==="−∞";
+  const un=Number(u), tn=Number(t);
+  return Number.isFinite(un) && Number.isFinite(tn) && nearly(un,tn,1e-3);
 }
-
-function checkPrediction(){
-  const sc = Scenarios[active];
-  const user = normalizeInput(predL.value);
-
-  const want = sc.exists ? String(sc.limit) : "DNE";
-
-  let ok=false;
-  if (want==="DNE") ok = (user==="DNE");
-  else {
-    const num = Number(user);
-    ok = Number.isFinite(num) && nearly(num, Number(want), 1e-3);
-  }
-
-  if (ok){
-    predFb.textContent = "✅ Nice. Now make your reasoning stronger: mention left and right explicitly.";
-    predFb.style.color = "#15803d";
+document.getElementById("gCheck").addEventListener("click", ()=>{
+  const sc=Scenarios[activeScn];
+  const uL=document.getElementById("uLeft").value;
+  const uR=document.getElementById("uRight").value;
+  const uT=document.getElementById("uTwo").value;
+  const okL=eqUser(uL, sc.truth.L);
+  const okR=eqUser(uR, sc.truth.R);
+  const okT=eqUser(uT, sc.truth.T);
+  const fb=document.getElementById("gFb");
+  if(okL && okR && okT){
+    fb.textContent="✅ Strong. Now make the reasoning sentence precise (left/right → conclusion).";
+    fb.style.color="#15803d";
     Deck.confetti();
-  } else {
-    predFb.textContent = "❌ Not quite. Use the slider + compare left and right behavior.";
-    predFb.style.color = "#b91c1c";
+  }else{
+    fb.textContent="❌ Not yet. Compare left and right carefully (and watch for ±∞ and oscillation).";
+    fb.style.color="#b91c1c";
   }
-}
-
-function revealAnswer(){
-  const sc = Scenarios[active];
-  const html = `
-    <div class="hint">
-      <b>Scenario:</b> ${sc.name}<br>
-      <b>a:</b> ${fmt(sc.a)}<br>
-      <b>Left limit:</b> ${fmt(sc.left)} &nbsp; | &nbsp;
-      <b>Right limit:</b> ${fmt(sc.right)}<br>
-      <b>Two-sided:</b> <b>${sc.exists ? fmt(sc.limit) : "DNE"}</b><br>
-      <span class="small">${sc.note}</span>
-    </div>
-  `;
-  ansBox.innerHTML = html;
-  Deck.renderMath(ansBox);
-}
-
-/* scenario change / slider wiring */
-scSel.addEventListener("change", ()=>{
-  active = scSel.value;
-  predL.value=""; predWhy.value=""; predFb.textContent=""; ansBox.innerHTML="";
-  xSlider.value = -600;
-  rebuildGraph();
 });
-xSlider.addEventListener("input", updateReadout);
-
-document.getElementById("snapLeft").addEventListener("click", ()=>{ xSlider.value = -950; updateReadout(); });
-document.getElementById("snapRight").addEventListener("click", ()=>{ xSlider.value = 950; updateReadout(); });
-
-document.getElementById("checkPred").addEventListener("click", checkPrediction);
-document.getElementById("revealAns").addEventListener("click", revealAnswer);
-
-document.getElementById("labCSV").addEventListener("click", ()=>{
-  const sc = Scenarios[active];
-  const rows=[["scenario","a","predicted","reasoning","true_two_sided","left","right"],
-    [sc.name, sc.a, predL.value||"", predWhy.value||"", (sc.exists?sc.limit:"DNE"), fmt(sc.left), fmt(sc.right)]
-  ];
-  Deck.downloadCSV("AB_L1_graph_lab.csv", rows);
+document.getElementById("gReveal").addEventListener("click", ()=>{
+  const sc=Scenarios[activeScn];
+  const box=document.getElementById("gAns");
+  box.innerHTML = `<div class="hint text-lg">
+    <b>${sc.name}</b><br>
+    Left: <b>${sc.truth.L}</b> • Right: <b>${sc.truth.R}</b> • Two-sided: <b>${sc.truth.T}</b><br>
+    <span class="soft">${sc.truth.note}</span>
+  </div>`;
+  Deck.renderMath(box);
 });
-document.getElementById("labJSON").addEventListener("click", ()=>{
-  const sc = Scenarios[active];
-  Deck.downloadJSON("AB_L1_graph_lab.json", {
+document.getElementById("gCSV").addEventListener("click", ()=>{
+  const sc=Scenarios[activeScn];
+  const rows=[["scenario","a","user_left","user_right","user_two","truth_left","truth_right","truth_two","reasoning"],
+    [sc.name, sc.a,
+     document.getElementById("uLeft").value||"",
+     document.getElementById("uRight").value||"",
+     document.getElementById("uTwo").value||"",
+     sc.truth.L, sc.truth.R, sc.truth.T,
+     document.getElementById("uWhy").value||""
+    ]];
+  Deck.downloadCSV("AB_L1_graphlab.csv", rows);
+});
+document.getElementById("gJSON").addEventListener("click", ()=>{
+  const sc=Scenarios[activeScn];
+  Deck.downloadJSON("AB_L1_graphlab.json", {
     scenario: sc.name, a: sc.a,
-    predicted: predL.value||"", reasoning: predWhy.value||"",
-    truth: { left: sc.left, right: sc.right, twoSided: sc.exists ? sc.limit : "DNE" }
+    user: {left:document.getElementById("uLeft").value||"", right:document.getElementById("uRight").value||"", two:document.getElementById("uTwo").value||"", why:document.getElementById("uWhy").value||""},
+    truth: sc.truth
   });
 });
-
-/* build graph first time */
-active="rem"; rebuildGraph();
 
 /* ===================== Table Lab ===================== */
-const tblScenario = document.getElementById("tblScenario");
-const tblDepth = document.getElementById("tblDepth");
-const tblOut = document.getElementById("tblOut");
+const tScenario=document.getElementById("tScenario");
+const tDepth=document.getElementById("tDepth");
+const tOut=document.getElementById("tOut");
 
 function makeApproachXs(a, depth){
-  // use 10^-k approach values
   const xsL=[], xsR=[];
   for(let k=1;k<=depth;k++){
-    const d = Math.pow(10, -k);
-    xsL.push(a - d);
-    xsR.push(a + d);
+    const d=Math.pow(10,-k);
+    xsL.push(a-d);
+    xsR.push(a+d);
   }
-  return {xsL, xsR};
+  return {xsL,xsR};
 }
-function evalFx(scKey, x){
-  const sc=Scenarios[scKey];
-  const y=sc.fn(x);
-  if (y===null) return "undef";
-  if (y===Infinity) return "+∞";
-  if (y===-Infinity) return "−∞";
-  if (!Number.isFinite(y)) return "undef";
-  // keep table readable
-  const r=Math.round(y*100000)/100000;
-  return String(r);
-}
-function buildTable(){
-  const key=tblScenario.value;
-  const depth=Number(tblDepth.value);
+function evalFx(key,x){
   const sc=Scenarios[key];
+  const y=sc.fn(x);
+  if(y===null) return "undef";
+  if(y===Infinity) return "+∞";
+  if(y===-Infinity) return "−∞";
+  if(!Number.isFinite(y)) return "undef";
+  return (Math.round(y*100000)/100000).toString();
+}
+function tBuild(){
+  const key=tScenario.value;
+  const sc=Scenarios[key];
+  const depth=Number(tDepth.value);
   const {xsL,xsR}=makeApproachXs(sc.a, depth);
 
-  let html = `
-    <thead><tr>
-      <th>x (left)</th><th>f(x)</th>
-      <th>x (right)</th><th>f(x)</th>
-    </tr></thead><tbody>
-  `;
+  let html=`<thead><tr><th>x (left)</th><th>f(x)</th><th>x (right)</th><th>f(x)</th></tr></thead><tbody>`;
   for(let i=0;i<depth;i++){
-    html += `
-      <tr>
-        <td>${xsL[i].toFixed(5)}</td><td>${evalFx(key, xsL[i])}</td>
-        <td>${xsR[i].toFixed(5)}</td><td>${evalFx(key, xsR[i])}</td>
-      </tr>
-    `;
+    html += `<tr><td>${xsL[i].toFixed(6)}</td><td>${evalFx(key,xsL[i])}</td><td>${xsR[i].toFixed(6)}</td><td>${evalFx(key,xsR[i])}</td></tr>`;
   }
-  html += "</tbody>";
-  tblOut.innerHTML = html;
+  html += `</tbody>`;
+  tOut.innerHTML=html;
 }
-document.getElementById("tblBuild").addEventListener("click", buildTable);
-buildTable(); // initial
+document.getElementById("tBuild").addEventListener("click", tBuild);
+tBuild();
 
-const Lleft = document.getElementById("Lleft");
-const Lright = document.getElementById("Lright");
-const Ltwo = document.getElementById("Ltwo");
-const tblWhy = document.getElementById("tblWhy");
-const tblFb = document.getElementById("tblFb");
-const tblAns = document.getElementById("tblAns");
-
-function truthFor(key){
-  const sc=Scenarios[key];
-  const left = (key==="osc") ? "DNE" : fmt(sc.left);
-  const right = (key==="osc") ? "DNE" : fmt(sc.right);
-  const two = sc.exists ? fmt(sc.limit) : "DNE";
-  return {left,right,two};
-}
-
-function checkTableConclusions(){
-  const key=tblScenario.value;
-  const truth=truthFor(key);
-  const uL = normalizeInput(Lleft.value);
-  const uR = normalizeInput(Lright.value);
-  const uT = normalizeInput(Ltwo.value);
-
-  function eq(u, t){
-    // t is formatted; normalize both for compare
-    const tn = normalizeInput(t);
-    if (tn==="DNE") return u==="DNE";
-    if (tn==="+∞") return u==="+∞";
-    if (tn==="−∞") return u==="−∞";
-    const un = Number(u), tnN = Number(tn);
-    return Number.isFinite(un) && Number.isFinite(tnN) && nearly(un, tnN, 1e-3);
-  }
-
-  const okL = eq(uL, truth.left);
-  const okR = eq(uR, truth.right);
-  const okT = eq(uT, truth.two);
-
-  if(okL && okR && okT){
-    tblFb.textContent = "✅ Great. Your conclusion matches the behavior.";
-    tblFb.style.color="#15803d";
+document.getElementById("tCheck").addEventListener("click", ()=>{
+  const key=tScenario.value;
+  const tr=Scenarios[key].truth;
+  const okL=eqUser(document.getElementById("tLeft").value, tr.L);
+  const okR=eqUser(document.getElementById("tRight").value, tr.R);
+  const okT=eqUser(document.getElementById("tTwo").value, tr.T);
+  const fb=document.getElementById("tFb");
+  if(okL&&okR&&okT){
+    fb.textContent="✅ Good conclusion supported by evidence.";
+    fb.style.color="#15803d";
     Deck.confetti();
-  } else {
-    tblFb.textContent = `❌ Not yet. Check left vs right carefully.`;
-    tblFb.style.color="#b91c1c";
+  }else{
+    fb.textContent="❌ Re-check: do the left and right columns chase the same thing?";
+    fb.style.color="#b91c1c";
   }
-}
-
-function revealTableTruth(){
-  const key=tblScenario.value;
-  const t=truthFor(key);
-  const sc=Scenarios[key];
-  tblAns.innerHTML = `
-    <div class="hint">
-      <b>${sc.name}</b><br>
-      Left: <b>${t.left}</b> • Right: <b>${t.right}</b> • Two-sided: <b>${t.two}</b><br>
-      <span class="small">${sc.note}</span>
-    </div>
-  `;
-  Deck.renderMath(tblAns);
-}
-
-document.getElementById("tblCheck").addEventListener("click", checkTableConclusions);
-document.getElementById("tblReveal").addEventListener("click", revealTableTruth);
-
-document.getElementById("tblCSV").addEventListener("click", ()=>{
-  const key=tblScenario.value;
-  const sc=Scenarios[key];
-  const t=truthFor(key);
-  const rows=[["scenario","a","user_left","user_right","user_two_sided","truth_left","truth_right","truth_two_sided","reasoning"],
-    [sc.name, sc.a, Lleft.value||"", Lright.value||"", Ltwo.value||"", t.left, t.right, t.two, tblWhy.value||""]
-  ];
-  Deck.downloadCSV("AB_L1_table_lab.csv", rows);
 });
-document.getElementById("tblJSON").addEventListener("click", ()=>{
-  const key=tblScenario.value;
+document.getElementById("tReveal").addEventListener("click", ()=>{
+  const key=tScenario.value;
+  const tr=Scenarios[key].truth;
+  const box=document.getElementById("tAns");
+  box.innerHTML = `<div class="hint text-lg">
+    Left: <b>${tr.L}</b> • Right: <b>${tr.R}</b> • Two-sided: <b>${tr.T}</b><br>
+    <span class="soft">${tr.note}</span>
+  </div>`;
+  Deck.renderMath(box);
+});
+document.getElementById("tCSV").addEventListener("click", ()=>{
+  const key=tScenario.value;
   const sc=Scenarios[key];
-  const t=truthFor(key);
-  Deck.downloadJSON("AB_L1_table_lab.json", {
+  const tr=sc.truth;
+  Deck.downloadCSV("AB_L1_tablelab.csv", [[
+    "scenario","a","user_left","user_right","user_two","truth_left","truth_right","truth_two","reasoning"
+  ],[
+    sc.name, sc.a,
+    document.getElementById("tLeft").value||"",
+    document.getElementById("tRight").value||"",
+    document.getElementById("tTwo").value||"",
+    tr.L,tr.R,tr.T,
+    document.getElementById("tWhy").value||""
+  ]]);
+});
+document.getElementById("tJSON").addEventListener("click", ()=>{
+  const key=tScenario.value;
+  const sc=Scenarios[key];
+  Deck.downloadJSON("AB_L1_tablelab.json", {
     scenario: sc.name, a: sc.a,
-    user: {left:Lleft.value||"", right:Lright.value||"", twoSided:Ltwo.value||"", reasoning:tblWhy.value||""},
-    truth: t
+    user: {left:document.getElementById("tLeft").value||"", right:document.getElementById("tRight").value||"", two:document.getElementById("tTwo").value||"", why:document.getElementById("tWhy").value||""},
+    truth: sc.truth
   });
 });
+
+/* ===================== Secant slope widget (real-world) ===================== */
+const secSvg=document.getElementById("secSvg");
+const hSlider=document.getElementById("hSlider");
+const hOut=document.getElementById("hOut");
+const mOut=document.getElementById("mOut");
+const hFb=document.getElementById("hFb");
+const hAns=document.getElementById("hAns");
+const hGuess=document.getElementById("hGuess");
+
+function fsec(x){ return x*x; } // chosen for clarity; replace later if you want
+const a=2;
+function drawSecant(){
+  secSvg.innerHTML="";
+  const m=makeMapper(640,360, 0.5, 3.5, -0.5, 10.5);
+  drawAxes(secSvg,m);
+  plot(secSvg,m,(x)=>fsec(x),[]);
+  drawVLine(secSvg,m,a,"#e2e8f0");
+
+  const h = Number(hSlider.value)/100;  // 0.05 .. 2.00
+  hOut.textContent = (Math.round(h*100)/100).toString();
+
+  const x1=a, x2=a+h;
+  const y1=fsec(x1), y2=fsec(x2);
+  const slope=(y2-y1)/h;
+  mOut.textContent = (Math.round(slope*1000)/1000).toString();
+
+  // points
+  drawPoint(secSvg,m,x1,y1,{fill:"#111827",stroke:"#111827",r:6});
+  drawPoint(secSvg,m,x2,y2,{fill:"var(--accent)",stroke:"#111827",r:6});
+
+  // secant line
+  secSvg.appendChild(svgEl("line",{
+    x1:m.X(x1), y1:m.Y(y1),
+    x2:m.X(x2), y2:m.Y(y2),
+    stroke:"var(--primary2)", "stroke-width":"3"
+  }));
+
+  hFb.textContent="";
+  hAns.innerHTML="";
+}
+hSlider.addEventListener("input", drawSecant);
+document.getElementById("hTiny").addEventListener("click", ()=>{
+  hSlider.value=5;
+  drawSecant();
+});
+document.getElementById("hCheck").addEventListener("click", ()=>{
+  const guess=Number(normalizeInput(hGuess.value));
+  if(!Number.isFinite(guess)){ hFb.textContent="Enter a number."; hFb.style.color="#b91c1c"; return; }
+  // For f(x)=x^2, derivative at 2 is 4
+  const ok=nearly(guess,4,1e-2);
+  hFb.textContent = ok ? "✅ Yes — the tangent slope is 4." : "❌ Not quite. Make h smaller and watch the secant slope settle.";
+  hFb.style.color = ok ? "#15803d" : "#b91c1c";
+  if(ok) Deck.confetti();
+});
+document.getElementById("hReveal").addEventListener("click", ()=>{
+  hAns.innerHTML = `<div class="hint text-lg">
+    For \(f(x)=x^2\), the tangent slope at \(x=2\) is \(f'(2)=4\). Notice the secant slopes approach 4 as \(h\to 0\).
+  </div>`;
+  Deck.renderMath(hAns);
+});
+drawSecant();
 
 /* ===================== ε–δ sandbox ===================== */
-const edSVG = document.getElementById("edSVG");
-const eps = document.getElementById("eps");
-const del = document.getElementById("del");
-const epsOut = document.getElementById("epsOut");
-const delOut = document.getElementById("delOut");
-const edFb = document.getElementById("edFb");
+const edSvg=document.getElementById("edSvg");
+const eps=document.getElementById("eps");
+const del=document.getElementById("del");
+const epsOut=document.getElementById("epsOut");
+const delOut=document.getElementById("delOut");
+const edFb=document.getElementById("edFb");
 
 function drawED(){
-  edSVG.innerHTML="";
-  const W=640,H=420;
+  edSvg.innerHTML="";
+  const W=640,H=360;
   const xMin=0.6,xMax=3.4,yMin=0,yMax=10;
   const m=makeMapper(W,H,xMin,xMax,yMin,yMax);
-  drawAxes(edSVG, m);
-
-  // function f(x)=x^2
-  plotFunction(edSVG, m, (x)=>x*x, []);
+  drawAxes(edSvg,m);
+  plot(edSvg,m,(x)=>x*x,[]);
 
   const a=2, L=4;
-  // epsilon and delta from sliders: map 10..200 to nice range
-  const epsVal = (Number(eps.value)/100) * 1.0; // 0.1..2.0
-  const delVal = (Number(del.value)/100) * 1.0; // 0.1..2.0
+  const epsVal=(Number(eps.value)/100)*1.0; //0.1..2.0
+  const delVal=(Number(del.value)/100)*1.0;
 
-  epsOut.textContent = (Math.round(epsVal*100)/100).toString();
-  delOut.textContent = (Math.round(delVal*100)/100).toString();
+  epsOut.textContent=(Math.round(epsVal*100)/100).toString();
+  delOut.textContent=(Math.round(delVal*100)/100).toString();
 
-  // epsilon band rectangle
-  const yTop = L + epsVal, yBot = L - epsVal;
-  const band = svgEl("rect",{
+  // epsilon band
+  const yTop=L+epsVal, yBot=L-epsVal;
+  edSvg.appendChild(svgEl("rect",{
     x:m.X(xMin), y:m.Y(yTop),
-    width: m.X(xMax)-m.X(xMin),
-    height: m.Y(yBot)-m.Y(yTop),
+    width:m.X(xMax)-m.X(xMin),
+    height:m.Y(yBot)-m.Y(yTop),
     fill:"#fde68a", opacity:"0.35"
-  });
-  edSVG.appendChild(band);
-
-  // delta window rectangle
-  const xL = a - delVal, xR = a + delVal;
-  const win = svgEl("rect",{
+  }));
+  // delta window
+  const xL=a-delVal, xR=a+delVal;
+  edSvg.appendChild(svgEl("rect",{
     x:m.X(xL), y:m.Y(yMax),
-    width: m.X(xR)-m.X(xL),
-    height: m.Y(yMin)-m.Y(yMax),
+    width:m.X(xR)-m.X(xL),
+    height:m.Y(yMin)-m.Y(yMax),
     fill:"#93c5fd", opacity:"0.18"
-  });
-  edSVG.appendChild(win);
+  }));
 
-  // draw vertical lines at a±delta and horizontal lines at L±eps
-  drawVLine(edSVG, m, xL, "#60a5fa");
-  drawVLine(edSVG, m, xR, "#60a5fa");
-  // horizontal helpers
-  edSVG.appendChild(svgEl("line",{x1:m.pad,y1:m.Y(yTop),x2:m.W-m.pad,y2:m.Y(yTop),stroke:"#f59e0b","stroke-width":"2","stroke-dasharray":"6 6"}));
-  edSVG.appendChild(svgEl("line",{x1:m.pad,y1:m.Y(yBot),x2:m.W-m.pad,y2:m.Y(yBot),stroke:"#f59e0b","stroke-width":"2","stroke-dasharray":"6 6"}));
-  drawVLine(edSVG, m, a, "#94a3b8");
-  // L line
-  edSVG.appendChild(svgEl("line",{x1:m.pad,y1:m.Y(L),x2:m.W-m.pad,y2:m.Y(L),stroke:"#94a3b8","stroke-width":"2"}));
+  drawVLine(edSvg,m,a,"#94a3b8");
+  drawHLine(edSvg,m,L,"#94a3b8");
+  drawVLine(edSvg,m,xL,"#60a5fa");
+  drawVLine(edSvg,m,xR,"#60a5fa");
+  drawHLine(edSvg,m,yTop,"#f59e0b");
+  drawHLine(edSvg,m,yBot,"#f59e0b");
 
-  // sample points in delta window and test if they land in epsilon band
-  const samples=14;
+  // sample points
   let ok=true;
-  for(let i=1;i<samples;i++){
-    const x = xL + (xR-xL)*i/samples;
-    if (Math.abs(x-a)<1e-8) continue;
+  for(let i=1;i<=14;i++){
+    const x=xL+(xR-xL)*i/15;
+    if(Math.abs(x-a)<1e-8) continue;
     const y=x*x;
     const inside = Math.abs(y-L) < epsVal;
-    if (!inside) ok=false;
-    drawPoint(edSVG, m, x, clamp(y,yMin,yMax), {fill: inside ? "#22c55e" : "#ef4444", stroke: inside ? "#166534" : "#991b1b", r:4, sw:2});
+    if(!inside) ok=false;
+    drawPoint(edSvg,m,x,clamp(y,yMin,yMax),{fill:inside?"#22c55e":"#ef4444",stroke:inside?"#166534":"#991b1b",r:4,sw:2});
   }
-
   if(ok){
-    edFb.textContent="✅ This δ seems to work for this ε (green points stay inside the band).";
-    edFb.style.color="#15803d";
-  } else {
-    edFb.textContent="❌ δ is too wide for this ε (some points escape the band). Try smaller δ or larger ε.";
-    edFb.style.color="#b91c1c";
+    edFb.className="badge ok";
+    edFb.textContent="δ works for this ε (points stay in band)";
+  }else{
+    edFb.className="badge bad";
+    edFb.textContent="δ too wide (some points escape). Try smaller δ.";
   }
 }
 eps.addEventListener("input", drawED);
 del.addEventListener("input", drawED);
-
-document.getElementById("suggestDelta").addEventListener("click", ()=>{
-  // A safe suggestion: for f(x)=x^2 near a=2, |x^2-4|=|x-2||x+2|.
-  // If |x-2|<1 then |x+2|<5, so choose δ = min(1, ε/5).
-  const epsVal = (Number(eps.value)/100) * 1.0;
-  const suggested = Math.min(1, epsVal/5);
-  // map back to slider scale (delta 0.1..2.0 approx)
-  const slider = Math.round(suggested*100);
-  del.value = clamp(slider, 10, 200);
+document.getElementById("edSuggest").addEventListener("click", ()=>{
+  // safe δ = min(1, ε/5) trick for x^2 near 2
+  const epsVal=(Number(eps.value)/100)*1.0;
+  const suggested=Math.min(1, epsVal/5);
+  del.value = clamp(Math.round(suggested*100), 10, 200);
   drawED();
 });
 drawED();
 
-/* ===================== Tricky Questions ===================== */
-const tricky = [
-  {
-    q: "If \(f(a)\) is undefined, then \(\lim_{x\\to a} f(x)\) must be DNE.",
-    choices: ["True","False"],
-    ans: 1,
-    why: "False. A removable hole can have a limit even if the value is missing."
-  },
-  {
-    q: "If \(\lim_{x\\to a^-}f(x)=2\) and \(\lim_{x\\to a^+}f(x)=2\), then \(\lim_{x\\to a}f(x)=2\).",
-    choices: ["True","False"],
-    ans: 0,
-    why: "True. Two-sided limit exists if left = right."
-  },
-  {
-    q: "Substitution gives \(0/0\). What is always correct?",
-    choices: ["The limit is 0", "The limit is DNE", "Simplify or use another method", "The limit is 1"],
-    ans: 2,
-    why: "\(0/0\) means indeterminate—simplify (factor/rationalize) or use other tools."
-  },
-  {
-    q: "For \(f(x)=\\frac{1}{x-2}\), as \(x\\to 2\) the two-sided limit is:",
-    choices: ["0", "DNE", "∞", "2"],
-    ans: 1,
-    why: "Left goes to −∞ and right goes to +∞, so two-sided limit DNE."
-  }
-];
-
-const trickyList = document.getElementById("trickyList");
-tricky.forEach((it, i)=>{
-  const d=document.createElement("div");
-  d.className="card p-4";
-  d.innerHTML = `
-    <div class="text-lg"><b>${i+1}.</b> ${it.q}</div>
-    <div class="mt-2">
-      ${it.choices.map((c,idx)=>`
-        <label class="mr-3"><input type="radio" name="tr${i}" value="${idx}"> ${c}</label>
-      `).join("")}
-    </div>
-    <div id="trWhy${i}" class="mt-2 small mono"></div>
-  `;
-  trickyList.appendChild(d);
+/* ===================== Tiered Practice Generator ===================== */
+let activeTier="foundation";
+function setTier(t){
+  activeTier=t;
+  document.querySelectorAll('[data-tier]').forEach(btn=>{
+    btn.setAttribute("aria-selected", btn.dataset.tier===t ? "true" : "false");
+  });
+  buildPractice();
+}
+document.querySelectorAll('[data-tier]').forEach(btn=>{
+  btn.addEventListener("click", ()=>setTier(btn.dataset.tier));
 });
-Deck.renderMath(trickyList);
 
-document.getElementById("trickyCheck").addEventListener("click", ()=>{
-  let ok=0;
-  tricky.forEach((it,i)=>{
-    const sel=(document.querySelector(`input[name="tr${i}"]:checked`)||{}).value;
-    const box=document.getElementById(`trWhy${i}`);
-    if(String(it.ans)===String(sel)){
-      ok++; box.textContent="✅ " + it.why; box.style.color="#15803d";
+const practiceBank = {
+  foundation: [
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 3}(2x-1)\\)", ans:5, exp:"Direct substitution works for polynomials."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 0}(x^2+4)\\)", ans:4, exp:"Continuous function → substitute."},
+    {type:"mcq", stem:"If left limit = 7 and right limit = 7, the two-sided limit is:", choices:["DNE","7","+∞","0"], ans:1, exp:"If left = right, limit exists and equals that value."},
+    {type:"mcq", stem:"If \\(f(a)\\) is undefined, then the limit must be DNE.", choices:["True","False"], ans:1, exp:"False. A removable hole can still have a limit."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 2}\\frac{x^2-4}{x-2}\\)", ans:4, exp:"Factor: \\(x^2-4=(x-2)(x+2)\\) → answer 4."},
+    {type:"mcq", stem:"A limit fails to exist if:", choices:["left ≠ right","function is defined","value is 0","graph is smooth"], ans:0, exp:"Left/right mismatch is a standard DNE reason."}
+  ],
+  core: [
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 1}\\frac{x^2-1}{x-1}\\)", ans:2, exp:"Cancel \\(x-1\\) then substitute."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 0}\\frac{\\sqrt{1+x}-1}{x}\\)", ans:0.5, exp:"Rationalize → \\(\\frac{1}{\\sqrt{1+x}+1}\\to \\frac12\\)."},
+    {type:"mcq", stem:"If \\(\\lim_{x\\to 2^-}f(x)=+\\infty\\) and \\(\\lim_{x\\to 2^+}f(x)=+\\infty\\), then:", choices:["two-sided limit is +∞","two-sided limit is DNE","two-sided limit is 2","must be 0"], ans:0, exp:"Both sides blow up the same way → infinite limit (+∞)."},
+    {type:"mcq", stem:"Let \\(f(x)=\\begin{cases}1,&x<0\\\\-1,&x\\ge 0\\end{cases}\\). Then \\(\\lim_{x\\to 0}f(x)\\) is:", choices:["0","1","-1","DNE"], ans:3, exp:"Left and right differ (1 vs -1)."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 0}\\frac{\\sin(5x)}{x}\\)", ans:5, exp:"Rewrite: \\(5\\cdot\\frac{\\sin(5x)}{5x}\\to 5\\)."},
+    {type:"mcq", stem:"A function can be discontinuous at \\(a\\) even if the limit exists at \\(a\\).", choices:["True","False"], ans:0, exp:"True. Removable discontinuity: limit exists but value differs/missing."}
+  ],
+  challenge: [
+    {type:"mcq", stem:"If \\(\\lim_{x\\to a^-}f(x)=2\\) and \\(\\lim_{x\\to a^+}f(x)\\) does not exist, then \\(\\lim_{x\\to a}f(x)\\) is:", choices:["2","DNE","0","+∞"], ans:1, exp:"Two-sided requires both one-sided to exist and match."},
+    {type:"mcq", stem:"As \\(x\\to 0\\), \\(\\sin(1/x)\\) behaves by:", choices:["approaching 0","approaching 1","oscillating","approaching +∞"], ans:2, exp:"Oscillation prevents a single approach value."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 0}\\frac{1-\\cos x}{x^2}\\)", ans:0.5, exp:"Known trig limit: \\(\\frac{1-\\cos x}{x^2}\\to \\frac12\\)."},
+    {type:"mcq", stem:"If \\(\\lim_{x\\to 2}f(x)=3\\) and \\(f(2)=10\\), then:", choices:["limit is 10","function is continuous at 2","limit is 3","DNE"], ans:2, exp:"Limit concerns nearby values; continuity would require f(2)=3."},
+    {type:"num", stem:"Evaluate: \\(\\lim_{x\\to 4}\\frac{\\sqrt{x}-2}{x-4}\\)", ans:0.25, exp:"Rationalize: becomes \\(\\frac{1}{\\sqrt{x}+2}\\to \\frac14\\)."},
+    {type:"mcq", stem:"A two-sided limit exists exactly when:", choices:["function is defined at a","graph has no hole","left limit = right limit","a is 0"], ans:2, exp:"That’s the defining condition."}
+  ]
+};
+
+let practiceSet=[];
+function buildPractice(){
+  const pool=practiceBank[activeTier].slice().sort(()=>Math.random()-0.5);
+  practiceSet = pool.slice(0,6);
+
+  const box=document.getElementById("pList");
+  box.innerHTML="";
+  practiceSet.forEach((it, i)=>{
+    const card=document.createElement("div");
+    card.className="card p-4";
+    const diff = activeTier==="foundation"?"Foundation":activeTier==="core"?"Core":"Challenge";
+    const tag = `<span class="badge">${diff}</span>`;
+    if(it.type==="mcq"){
+      card.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-lg font-extrabold text-primary">Q${i+1}</div>${tag}
+        </div>
+        <div class="mt-2 text-lg">${it.stem}</div>
+        <div class="mt-2">
+          ${it.choices.map((c,idx)=>`
+            <div><label><input type="radio" name="p${i}" value="${idx}"> ${c}</label></div>
+          `).join("")}
+        </div>
+        <div id="pWhy${i}" class="mt-2 small mono"></div>
+      `;
     } else {
-      box.textContent="❌ " + it.why; box.style.color="#b91c1c";
+      card.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-lg font-extrabold text-primary">Q${i+1}</div>${tag}
+        </div>
+        <div class="mt-2 text-lg">${it.stem}</div>
+        <div class="mt-2 flex gap-2 items-center flex-wrap">
+          <input class="pNum border rounded px-2 py-1 w-40" placeholder="number">
+          <span class="soft small">(fractions ok)</span>
+        </div>
+        <div id="pWhy${i}" class="mt-2 small mono"></div>
+      `;
+    }
+    box.appendChild(card);
+  });
+
+  document.getElementById("pScore").textContent="0/0";
+  document.getElementById("pFb").textContent="";
+  Deck.renderMath(box);
+}
+buildPractice();
+
+document.getElementById("pNew").addEventListener("click", buildPractice);
+
+document.getElementById("pCheck").addEventListener("click", ()=>{
+  let ok=0;
+  practiceSet.forEach((it,i)=>{
+    const why=document.getElementById(`pWhy${i}`);
+    if(it.type==="mcq"){
+      const sel=(document.querySelector(`input[name="p${i}"]:checked`)||{}).value;
+      const good = String(sel)===String(it.ans);
+      why.textContent = (good?"✅ ":"❌ ") + it.exp;
+      why.style.color = good ? "#15803d" : "#b91c1c";
+      if(good) ok++;
+    }else{
+      const card=document.querySelectorAll("#pList .card")[i];
+      const inp=card.querySelector(".pNum");
+      const u = Number(normalizeInput(inp.value));
+      const good = Number.isFinite(u) && nearly(u, Number(it.ans), 1e-2);
+      inp.style.borderColor = good ? "#22c55e" : "#ef4444";
+      why.textContent = (good?"✅ ":"❌ ") + it.exp;
+      why.style.color = good ? "#15803d" : "#b91c1c";
+      if(good) ok++;
     }
   });
-  const fb=document.getElementById("trickyFb");
-  fb.textContent = ok===tricky.length ? "✅ Excellent — you avoided the traps." : `Score: ${ok}/${tricky.length}`;
-  if(ok===tricky.length) Deck.confetti();
+  document.getElementById("pScore").textContent = `${ok}/${practiceSet.length}`;
+  const fb=document.getElementById("pFb");
+  fb.textContent = ok===practiceSet.length ? "✅ Clean sweep. You’re ready for AP-style items." : "Keep going — aim for clear reasoning, not just answers.";
+  fb.style.color = ok===practiceSet.length ? "#15803d" : "#9a3412";
+  if(ok===practiceSet.length) Deck.confetti();
 });
 
-document.getElementById("trickyCSV").addEventListener("click", ()=>{
-  const rows=[["question","correctIndex","userIndex"]];
-  tricky.forEach((it,i)=>{
-    const sel=(document.querySelector(`input[name="tr${i}"]:checked`)||{}).value ?? "";
-    rows.push([it.q, it.ans, sel]);
+document.getElementById("pCSV").addEventListener("click", ()=>{
+  const rows=[["tier","stem","correct","user"]];
+  practiceSet.forEach((it,i)=>{
+    let user="";
+    if(it.type==="mcq"){
+      user=(document.querySelector(`input[name="p${i}"]:checked`)||{}).value ?? "";
+    } else {
+      const card=document.querySelectorAll("#pList .card")[i];
+      user=card.querySelector(".pNum").value||"";
+    }
+    rows.push([activeTier,it.stem,(it.type==="mcq"?it.choices[it.ans]:it.ans),user]);
   });
-  Deck.downloadCSV("AB_L1_tricky.csv", rows);
+  Deck.downloadCSV("AB_L1_tiered_practice.csv", rows);
 });
-document.getElementById("trickyJSON").addEventListener("click", ()=>{
-  const data=tricky.map((it,i)=>({
-    question: it.q,
-    correctIndex: it.ans,
-    userIndex: (document.querySelector(`input[name="tr${i}"]:checked`)||{}).value ?? ""
-  }));
-  Deck.downloadJSON("AB_L1_tricky.json", data);
-});
-
-/* ===================== Tools slide checks ===================== */
-function setToolFb(el, ok, msg){
-  el.textContent = msg;
-  el.style.color = ok ? "#15803d" : "#b91c1c";
-  if(ok) Deck.confetti();
-}
-
-document.getElementById("tool1Check").addEventListener("click", ()=>{
-  const v=Number(document.getElementById("tool1").value);
-  const fb=document.getElementById("tool1Fb");
-  if(!Number.isFinite(v)) return setToolFb(fb,false,"Enter a number.");
-  setToolFb(fb, nearly(v,6,1e-3), nearly(v,6,1e-3) ? "✅ Correct (6)" : "❌ Not quite (should be 6).");
-});
-document.getElementById("tool1Steps").addEventListener("click", ()=>{
-  const box=document.getElementById("tool1Box");
-  box.innerHTML = `<div class="hint">Factor: \\(x^2-9=(x-3)(x+3)\\). Cancel \\(x-3\\). Limit \\(\\to x+3\\), so at 3 gives 6.</div>`;
-  Deck.renderMath(box);
+document.getElementById("pJSON").addEventListener("click", ()=>{
+  const data=practiceSet.map((it,i)=>{
+    let user="";
+    if(it.type==="mcq"){
+      user=(document.querySelector(`input[name="p${i}"]:checked`)||{}).value ?? "";
+    } else {
+      const card=document.querySelectorAll("#pList .card")[i];
+      user=card.querySelector(".pNum").value||"";
+    }
+    return {tier:activeTier, item:it, user};
+  });
+  Deck.downloadJSON("AB_L1_tiered_practice.json", data);
 });
 
-document.getElementById("tool2Check").addEventListener("click", ()=>{
-  const v=Number(document.getElementById("tool2").value);
-  const fb=document.getElementById("tool2Fb");
-  if(!Number.isFinite(v)) return setToolFb(fb,false,"Enter a number.");
-  setToolFb(fb, nearly(v,0.5,1e-3), nearly(v,0.5,1e-3) ? "✅ Correct (1/2)" : "❌ Not quite (should be 1/2).");
-});
-document.getElementById("tool2Steps").addEventListener("click", ()=>{
-  const box=document.getElementById("tool2Box");
-  box.innerHTML = `<div class="hint">Multiply by conjugate: \\(\\frac{\\sqrt{1+x}-1}{x}\\cdot\\frac{\\sqrt{1+x}+1}{\\sqrt{1+x}+1}=\\frac{1}{\\sqrt{1+x}+1}\\to \\frac12\\).</div>`;
-  Deck.renderMath(box);
-});
-
-document.getElementById("tool3Check").addEventListener("click", ()=>{
-  const v=Number(document.getElementById("tool3").value);
-  const fb=document.getElementById("tool3Fb");
-  if(!Number.isFinite(v)) return setToolFb(fb,false,"Enter a number.");
-  setToolFb(fb, nearly(v,5,1e-3), nearly(v,5,1e-3) ? "✅ Correct (5)" : "❌ Not quite (should be 5).");
-});
-document.getElementById("tool3Steps").addEventListener("click", ()=>{
-  const box=document.getElementById("tool3Box");
-  box.innerHTML = `<div class="hint">Rewrite: \\(\\frac{\\sin(5x)}{x}=5\\cdot\\frac{\\sin(5x)}{5x}\\to 5\\cdot 1=5\\).</div>`;
-  Deck.renderMath(box);
-});
-
-/* ===================== AP MCQ Practice ===================== */
-const mcqBank = [
+/* ===================== AP-style MCQ generator (original) ===================== */
+const mcBank = [
+  { stem:"Evaluate: \\(\\lim_{x\\to 2}\\frac{x^2-4}{x-2}\\).", choices:["0","2","4","DNE"], ans:2,
+    exp:"Factor/cancel then substitute." },
+  { stem:"If \\(\\lim_{x\\to a^-}f(x)=5\\) and \\(\\lim_{x\\to a^+}f(x)=5\\), then \\(\\lim_{x\\to a}f(x)=\\) ?", choices:["5","a","DNE","+∞"], ans:0,
+    exp:"Left equals right." },
+  { stem:"As \\(x\\to 0\\), \\(\\frac{\\sin(3x)}{x}\\) equals:", choices:["0","1","3","DNE"], ans:2,
+    exp:"Rewrite: \\(3\\cdot\\frac{\\sin(3x)}{3x}\\to 3\\)." },
+  { stem:"A function is continuous at \\(a\\) if:", choices:["limit exists","f(a) exists","limit equals f(a)","all of the above"], ans:3,
+    exp:"That’s the definition of continuity." },
+  { stem:"If \\(\\lim_{x\\to 1}f(x)=2\\) but \\(f(1)=7\\), which statement is true?", choices:["f is continuous","limit DNE","f is discontinuous at 1","limit must be 7"], ans:2,
+    exp:"Continuity requires equality." },
   {
-    q: "If \\(\\lim_{x\\to 2^-} f(x)=3\\) and \\(\\lim_{x\\to 2^+} f(x)=3\\), then \\(\\lim_{x\\to 2} f(x)\\) equals:",
-    choices: ["0", "3", "DNE", "2"],
-    ans: 1
+    stem:"Let \\(g(x)=\\begin{cases}x+1,&x<1\\\\3,&x\\ge 1\\end{cases}\\). Then \\(\\lim_{x\\to 1}g(x)\\) is:",
+    choices:["2","3","2.5","DNE"], ans:3,
+    exp:"Left 2, right 3 → DNE."
   },
   {
-    q: "Evaluate \\(\\lim_{x\\to 1}\\frac{x^2-1}{x-1}\\).",
-    choices: ["0", "1", "2", "DNE"],
-    ans: 2
+    stem:"Evaluate: \\(\\lim_{x\\to 0}\\frac{\\sqrt{1+x}-1}{x}\\).",
+    choices:["0","1/2","1","DNE"], ans:1,
+    exp:"Rationalize → \\(\\frac{1}{\\sqrt{1+x}+1}\\to 1/2\\)."
   },
   {
-    q: "Evaluate \\(\\lim_{x\\to 0}\\frac{\\sin x}{x}\\).",
-    choices: ["0", "1", "DNE", "∞"],
-    ans: 1
-  },
-  {
-    q: "If a function oscillates near \\(a\\) (like \\(\\sin(1/x)\\) near 0), the limit:",
-    choices: ["always equals 0", "always equals 1", "may be DNE", "must be ∞"],
-    ans: 2
-  },
-  {
-    q: "Evaluate \\(\\lim_{x\\to 3}\\frac{\\sqrt{x}-\\sqrt{3}}{x-3}\\).",
-    choices: ["\\(\\frac{1}{2\\sqrt{3}}\\)", "\\(\\frac{1}{\\sqrt{3}}\\)", "0", "DNE"],
-    ans: 0
-  },
-  {
-    q: "For \\(f(x)=\\frac{1}{x-2}\\), the two-sided limit as \\(x\\to 2\\) is:",
-    choices: ["0", "2", "∞", "DNE"],
-    ans: 3
-  },
-  {
-    q: "Evaluate \\(\\lim_{x\\to 0}\\frac{e^x-1}{x}\\).",
-    choices: ["0", "1", "e", "DNE"],
-    ans: 1
-  },
-  {
-    q: "If \\(\\lim_{x\\to a}f(x)=L\\) and \\(f(a)=L\\), then \\(f\\) is:",
-    choices: ["discontinuous at a", "continuous at a", "undefined at a", "oscillating"],
-    ans: 1
+    stem:"As \\(x\\to 0\\), \\(\\sin(1/x)\\) causes the limit to:",
+    choices:["be 0","be 1","DNE","be +∞"], ans:2,
+    exp:"Oscillation → DNE."
   }
 ];
-
-const mcqList = document.getElementById("mcqList");
-let mcqSet = [];
-
-function buildMCQ(){
-  mcqList.innerHTML="";
-  mcqSet = mcqBank.slice().sort(()=>Math.random()-0.5).slice(0,6);
-  mcqSet.forEach((it,i)=>{
+let mcSet=[];
+function buildMC(){
+  mcSet = mcBank.slice().sort(()=>Math.random()-0.5).slice(0,5);
+  const box=document.getElementById("mcList");
+  box.innerHTML="";
+  mcSet.forEach((it,i)=>{
     const d=document.createElement("div");
     d.className="card p-4";
     d.innerHTML=`
-      <div class="text-lg"><b>${i+1}.</b> ${it.q}</div>
+      <div class="scrollbox">
+        <span class="scrollHint">Scroll ↕</span>
+        <div class="text-lg"><b>${i+1}.</b> ${it.stem}</div>
+      </div>
       <div class="mt-2">
-        ${it.choices.map((c,idx)=>`
-          <div><label><input type="radio" name="mc${i}" value="${idx}"> ${c}</label></div>
-        `).join("")}
+        ${it.choices.map((c,idx)=>`<div><label><input type="radio" name="mc${i}" value="${idx}"> ${c}</label></div>`).join("")}
       </div>
       <div id="mcWhy${i}" class="mt-2 small mono"></div>
     `;
-    mcqList.appendChild(d);
+    box.appendChild(d);
   });
-  Deck.renderMath(mcqList);
-  document.getElementById("mcqFb").textContent="";
+  document.getElementById("mcFb").textContent="";
+  Deck.renderMath(box);
 }
-buildMCQ();
-document.getElementById("mcqNew").addEventListener("click", buildMCQ);
+buildMC();
 
-document.getElementById("mcqCheck").addEventListener("click", ()=>{
+document.getElementById("mcNew").addEventListener("click", buildMC);
+document.getElementById("mcCheck").addEventListener("click", ()=>{
   let ok=0;
-  mcqSet.forEach((it,i)=>{
+  mcSet.forEach((it,i)=>{
     const sel=(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value;
-    const box=document.getElementById(`mcWhy${i}`);
-    if(String(sel)===String(it.ans)){
-      ok++; box.textContent="✅ Correct"; box.style.color="#15803d";
-    } else {
-      box.textContent=`❌ Correct answer is (${String.fromCharCode(65+it.ans)})`; box.style.color="#b91c1c";
-    }
+    const why=document.getElementById(`mcWhy${i}`);
+    const good = String(sel)===String(it.ans);
+    why.textContent = (good?"✅ ":"❌ ") + it.exp;
+    why.style.color = good ? "#15803d" : "#b91c1c";
+    if(good) ok++;
   });
-  const fb=document.getElementById("mcqFb");
-  fb.textContent = ok===mcqSet.length ? "✅ Perfect set!" : `Score: ${ok}/${mcqSet.length}`;
-  if(ok===mcqSet.length) Deck.confetti();
+  const fb=document.getElementById("mcFb");
+  fb.textContent = ok===mcSet.length ? "✅ Perfect MCQ set." : `Score: ${ok}/${mcSet.length}`;
+  fb.style.color = ok===mcSet.length ? "#15803d" : "#9a3412";
+  if(ok===mcSet.length) Deck.confetti();
 });
-
-document.getElementById("mcqCSV").addEventListener("click", ()=>{
-  const rows=[["question","correctIndex","userIndex"]];
-  mcqSet.forEach((it,i)=>{
+document.getElementById("mcCSV").addEventListener("click", ()=>{
+  const rows=[["stem","correctIndex","userIndex"]];
+  mcSet.forEach((it,i)=>{
     const sel=(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value ?? "";
-    rows.push([it.q, it.ans, sel]);
+    rows.push([it.stem,it.ans,sel]);
   });
-  Deck.downloadCSV("AB_L1_mcq.csv", rows);
+  Deck.downloadCSV("AB_L1_APstyle_mcq.csv", rows);
 });
-document.getElementById("mcqJSON").addEventListener("click", ()=>{
-  const data=mcqSet.map((it,i)=>({
-    question: it.q,
-    correctIndex: it.ans,
-    userIndex: (document.querySelector(`input[name="mc${i}"]:checked`)||{}).value ?? ""
+document.getElementById("mcJSON").addEventListener("click", ()=>{
+  const data=mcSet.map((it,i)=>({
+    item:it,
+    user:(document.querySelector(`input[name="mc${i}"]:checked`)||{}).value ?? ""
   }));
-  Deck.downloadJSON("AB_L1_mcq.json", data);
+  Deck.downloadJSON("AB_L1_APstyle_mcq.json", data);
 });
 
-/* ===================== FRQ check ===================== */
-document.getElementById("frqCheck").addEventListener("click", ()=>{
-  const L=Number(document.getElementById("frq1").value);
-  const V=Number(document.getElementById("frq2").value);
-  const K=Number(document.getElementById("frq4").value);
-  const fb=document.getElementById("frqFb");
-
-  const okL = Number.isFinite(L) && nearly(L,2,1e-3);
-  const okV = Number.isFinite(V) && nearly(V,7,1e-3);
-  const okK = Number.isFinite(K) && nearly(K,2,1e-3);
-
-  const msg=[
-    okL ? "✅ Limit=2" : "❌ Limit should be 2",
-    okV ? "✅ f(1)=7" : "❌ f(1)=7",
-    okK ? "✅ k=2" : "❌ k should be 2"
+/* ===================== Mini-FRQ check ===================== */
+document.getElementById("frCheck").addEventListener("click", ()=>{
+  const L=Number(normalizeInput(document.getElementById("fr1").value));
+  const V=Number(normalizeInput(document.getElementById("fr2").value));
+  const K=Number(normalizeInput(document.getElementById("fr4").value));
+  const okL=Number.isFinite(L)&&nearly(L,2,1e-3);
+  const okV=Number.isFinite(V)&&nearly(V,7,1e-3);
+  const okK=Number.isFinite(K)&&nearly(K,2,1e-3);
+  const fb=document.getElementById("frFb");
+  fb.textContent = [
+    okL?"✅ Limit=2":"❌ Limit=2",
+    okV?"✅ f(1)=7":"❌ f(1)=7",
+    okK?"✅ k=2":"❌ k=2"
   ].join(" • ");
-
-  fb.textContent = msg;
-  fb.style.color = (okL && okV && okK) ? "#15803d" : "#b91c1c";
-  if(okL && okV && okK) Deck.confetti();
+  fb.style.color = (okL&&okV&&okK) ? "#15803d" : "#b91c1c";
+  if(okL&&okV&&okK) Deck.confetti();
 });
-
-document.getElementById("frqReveal").addEventListener("click", ()=>{
-  const box=document.getElementById("frqSol");
-  box.innerHTML = `
-    <div class="hint">
-      For \(x\\ne 1\): \(\\frac{x^2-1}{x-1}=\\frac{(x-1)(x+1)}{x-1}=x+1\).<br>
-      So \(\lim_{x\\to 1} f(x)=2\). Also \(f(1)=7\). Not continuous since \(2\\ne 7\).<br>
-      To make it continuous, redefine \(f(1)=k=2\).
-    </div>
-  `;
+document.getElementById("frReveal").addEventListener("click", ()=>{
+  const box=document.getElementById("frAns");
+  box.innerHTML = `<div class="hint text-lg">
+    For \(x\\ne 1\): \(\frac{x^2-1}{x-1}=\frac{(x-1)(x+1)}{x-1}=x+1\).<br>
+    So \(\lim_{x\\to 1}f(x)=2\). Also \(f(1)=7\). Not continuous since \(2\\ne 7\).<br>
+    Make it continuous by redefining \(f(1)=k=2\).
+  </div>`;
   Deck.renderMath(box);
 });
+document.getElementById("frCSV").addEventListener("click", ()=>{
+  Deck.downloadCSV("AB_L1_minifrq.csv", [[
+    "limit","f1","explanation","k"
+  ],[
+    document.getElementById("fr1").value||"",
+    document.getElementById("fr2").value||"",
+    document.getElementById("fr3").value||"",
+    document.getElementById("fr4").value||""
+  ]]);
+});
+document.getElementById("frJSON").addEventListener("click", ()=>{
+  Deck.downloadJSON("AB_L1_minifrq.json", {
+    limit:document.getElementById("fr1").value||"",
+    f1:document.getElementById("fr2").value||"",
+    explanation:document.getElementById("fr3").value||"",
+    k:document.getElementById("fr4").value||""
+  });
+});
 
-function frqData(){
-  return {
-    limit: document.getElementById("frq1").value||"",
-    f1: document.getElementById("frq2").value||"",
-    explanation: document.getElementById("frq3").value||"",
-    k: document.getElementById("frq4").value||""
-  };
+/* ===================== Boss Fight ===================== */
+const bfStem=document.getElementById("bfStem");
+const bfTier=document.getElementById("bfTier");
+const bfAns=document.getElementById("bfAns");
+const bfFb=document.getElementById("bfFb");
+const bfHintBox=document.getElementById("bfHintBox");
+const bfStreak=document.getElementById("bfStreak");
+
+let bfState={cur:null, streak:0, hist:[]};
+
+const bossBank = {
+  foundation:[
+    {
+      stem:`A function is continuous and linear. You are told \\(f(2)=9\\). What is \\(\\lim_{x\\to 2} f(x)\\)?`,
+      ans:"9",
+      hint:"Continuous → limit equals function value."
+    },
+    {
+      stem:`Compute \\(\\lim_{x\\to 4} (3x-5)\\).`,
+      ans:"7",
+      hint:"Polynomials are continuous; substitute."
+    }
+  ],
+  core:[
+    {
+      stem:`Let \\(f(x)=\\frac{x^2-9}{x-3}\\) for \\(x\\ne 3\\). Find \\(\\lim_{x\\to 3} f(x)\\).`,
+      ans:"6",
+      hint:"Factor numerator and cancel."
+    },
+    {
+      stem:`Let \\(g(x)=\\begin{cases}2x,&x<1\\\\x+4,&x\\ge 1\\end{cases}\\). Find \\(\\lim_{x\\to 1} g(x)\\) or DNE.`,
+      ans:"DNE",
+      hint:"Compute left and right separately."
+    }
+  ],
+  challenge:[
+    {
+      stem:`Evaluate \\(\\lim_{x\\to 0}\\frac{1-\\cos x}{x^2}\\).`,
+      ans:"1/2",
+      hint:"Special trig limit: equals 1/2."
+    },
+    {
+      stem:`A function satisfies \\(\\lim_{x\\to a^-}f(x)=+\\infty\\) and \\(\\lim_{x\\to a^+}f(x)=+\\infty\\). What is \\(\\lim_{x\\to a}f(x)\\)?`,
+      ans:"+∞",
+      hint:"If both sides go to +∞, the (infinite) limit is +∞."
+    }
+  ]
+};
+
+function bfNew(){
+  const tier=bfTier.value;
+  const pool=bossBank[tier];
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  bfState.cur=pick;
+  bfStem.innerHTML = `<div class="text-lg">${pick.stem}</div>`;
+  bfAns.value="";
+  bfFb.textContent="";
+  bfHintBox.innerHTML="";
+  Deck.renderMath(bfStem);
 }
-document.getElementById("frqCSV").addEventListener("click", ()=>{
-  const d=frqData();
-  Deck.downloadCSV("AB_L1_frq.csv", [["limit","f1","explanation","k"],[d.limit,d.f1,d.explanation,d.k]]);
+function bfCheck(){
+  const u=normalizeInput(bfAns.value);
+  const want=normalizeInput(bfState.cur.ans);
+  let ok=false;
+
+  if(want==="DNE") ok = (u==="DNE");
+  else if(want==="+∞") ok = (u==="+∞");
+  else if(want==="−∞") ok = (u==="−∞");
+  else {
+    const un=Number(u), wn=Number(normalizeInput(want));
+    ok = Number.isFinite(un) && Number.isFinite(wn) && nearly(un, wn, 1e-2);
+  }
+
+  if(ok){
+    bfState.streak++;
+    bfStreak.textContent=bfState.streak;
+    bfFb.textContent="✅ Boss defeated. New boss incoming…";
+    bfFb.style.color="#15803d";
+    Deck.confetti();
+    bfState.hist.push({tier:bfTier.value, stem:bfState.cur.stem, ans:bfState.cur.ans, user:u, correct:true});
+    bfNew();
+  }else{
+    bfState.streak=0;
+    bfStreak.textContent="0";
+    bfFb.textContent="❌ Not yet. Use the hint and try again.";
+    bfFb.style.color="#b91c1c";
+    bfState.hist.push({tier:bfTier.value, stem:bfState.cur.stem, ans:bfState.cur.ans, user:u, correct:false});
+  }
+}
+document.getElementById("bfNew").addEventListener("click", bfNew);
+document.getElementById("bfCheck").addEventListener("click", bfCheck);
+document.getElementById("bfHint").addEventListener("click", ()=>{
+  bfHintBox.innerHTML = `<div class="hint text-lg">${bfState.cur.hint}</div>`;
 });
-document.getElementById("frqJSON").addEventListener("click", ()=>{
-  Deck.downloadJSON("AB_L1_frq.json", frqData());
+document.getElementById("bfCSV").addEventListener("click", ()=>{
+  const rows=[["tier","stem","answer","user","correct"]];
+  bfState.hist.forEach(h=>rows.push([h.tier,h.stem,h.ans,h.user,h.correct]));
+  Deck.downloadCSV("AB_L1_bossfight.csv", rows);
 });
+document.getElementById("bfJSON").addEventListener("click", ()=>{
+  Deck.downloadJSON("AB_L1_bossfight.json", bfState.hist);
+});
+bfNew();
 
 /* ===================== Exit ticket export ===================== */
-function exitData(){
-  return {
-    meaning: document.getElementById("exit1").value||"",
-    example: document.getElementById("exit2").value||"",
-    question: document.getElementById("exit3").value||""
-  };
-}
-document.getElementById("exitCSV").addEventListener("click", ()=>{
-  const d=exitData();
-  Deck.downloadCSV("AB_L1_exit.csv", [["meaning","example","question"],[d.meaning,d.example,d.question]]);
+document.getElementById("eCSV").addEventListener("click", ()=>{
+  Deck.downloadCSV("AB_L1_exit.csv", [["meaning","example","question"],[
+    document.getElementById("e1").value||"",
+    document.getElementById("e2").value||"",
+    document.getElementById("e3").value||""
+  ]]);
 });
-document.getElementById("exitJSON").addEventListener("click", ()=>{
-  Deck.downloadJSON("AB_L1_exit.json", exitData());
+document.getElementById("eJSON").addEventListener("click", ()=>{
+  Deck.downloadJSON("AB_L1_exit.json", {
+    meaning:document.getElementById("e1").value||"",
+    example:document.getElementById("e2").value||"",
+    question:document.getElementById("e3").value||""
+  });
 });
 </script>
 
