@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>AP Calculus Portal</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-  <!-- Brand + Curriculum -->
+  <!-- Config -->
   <script src="config/brand.js"></script>
   <script src="config/apcalc.js"></script>
 
@@ -20,6 +22,7 @@
     :root{
       --primary:#6C1D45; --primary2:#8B2450; --accent:#C7A34F; --accent2:#E4D4A8;
       --ink:#0F172A; --line:#e9eef2; --bg:#F7FAFC; --ok:#136f3a; --soon:#8a3d00;
+      --banner:none;
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5}
@@ -28,8 +31,8 @@
       position:relative; color:#fff;
       background:
         linear-gradient(135deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.25) 60%, rgba(0,0,0,.35) 100%),
-        linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, transparent) 0%, color-mix(in srgb, var(--primary2) 84%, transparent) 45%, color-mix(in srgb, var(--primary) 88%, transparent) 100%),
-        var(--banner, none);
+        linear-gradient(135deg, rgba(108,29,69,.88) 0%, rgba(139,36,80,.84) 45%, rgba(108,29,69,.88) 100%),
+        var(--banner);
       background-position:center;
       background-size:cover;
       background-repeat:no-repeat;
@@ -64,7 +67,6 @@
     .status{font-size:11px; padding:6px 12px; border-radius:999px; border:1px solid transparent; text-transform:uppercase; letter-spacing:.3px}
     .open{ background:rgba(19,111,58,.1); color:var(--ok); border-color:rgba(19,111,58,.25) }
     .soon{ background:rgba(186,91,8,.08); color:var(--soon); border-color:rgba(186,91,8,.25) }
-
     .kbd{ font-variant-numeric:tabular-nums; font-weight:700; padding:.1rem .35rem; border-radius:.4rem; border:1px solid #d1d5db; background:#fff }
   </style>
 </head>
@@ -129,13 +131,12 @@
 </main>
 
 <script>
-  // --- Apply BRAND ---
+  // Apply BRAND → CSS vars + header/footer
   (function applyBrand(){
     const b = window.BRAND || {};
     const c = (b.colors || {});
     document.title = (b.portalTitle || "AP Calculus Portal");
 
-    // CSS vars
     const root = document.documentElement.style;
     root.setProperty('--primary',  c.primary  || '#6C1D45');
     root.setProperty('--primary2', c.primary2 || '#8B2450');
@@ -147,13 +148,8 @@
     root.setProperty('--ok',       c.ok       || '#136f3a');
     root.setProperty('--soon',     c.soon     || '#8a3d00');
 
-    // Optional banner
     const hero = document.getElementById('hero');
-    if (b.banner && b.banner.trim()){
-      hero.style.setProperty('--banner', `url('${b.banner}')`);
-    } else {
-      hero.style.setProperty('--banner', 'none');
-    }
+    hero.style.setProperty('--banner', (b.banner && b.banner.trim()) ? `url('${b.banner}')` : 'none');
 
     document.getElementById('brandLogo').src = b.logo || '';
     document.getElementById('brandTitle').textContent = b.portalTitle || 'AP Calculus Portal';
@@ -162,7 +158,6 @@
     document.getElementById('footerLine').textContent = (b.footerLine || "© {YEAR}").replace('{YEAR}', year);
   })();
 
-  // --- Build units/lessons with file existence check ---
   const $ = (s, el=document) => el.querySelector(s);
 
   const tabAB = $("#tabAB"), tabBC = $("#tabBC");
@@ -171,7 +166,7 @@
 
   function buildUnits(container, folder, units){
     container.innerHTML = "";
-    let lessonIndex = 1; // lesson-1 is Welcome in each course
+    let lessonIndex = 1; // lesson-1 exists in each course
 
     units.forEach((u, ui) => {
       const block = document.createElement("div");
@@ -249,7 +244,6 @@
   });
   q.addEventListener("input", e => filter(e.target.value));
 
-  // Render
   buildUnits($("#ab-units"), "ab", window.APCALC.AB);
   buildUnits($("#bc-units"), "bc", window.APCALC.BC);
   activate(localStorage.getItem("apcalc_course") || "AB");
