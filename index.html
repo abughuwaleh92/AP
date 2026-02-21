@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>AP Calculus Portal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <!-- Brand + Curriculum -->
+  <script src="config/brand.js"></script>
+  <script src="config/apcalc.js"></script>
+
+  <style>
+    :root{
+      --primary:#6C1D45; --primary2:#8B2450; --accent:#C7A34F; --accent2:#E4D4A8;
+      --ink:#0F172A; --line:#e9eef2; --bg:#F7FAFC; --ok:#136f3a; --soon:#8a3d00;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5}
+
+    .hero{
+      position:relative; color:#fff;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.25) 60%, rgba(0,0,0,.35) 100%),
+        linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, transparent) 0%, color-mix(in srgb, var(--primary2) 84%, transparent) 45%, color-mix(in srgb, var(--primary) 88%, transparent) 100%),
+        var(--banner, none);
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:""; position:absolute; inset:-40% -40% auto auto;
+      width:200%; height:200%;
+      background:radial-gradient(circle, rgba(199,163,79,.22) 0%, transparent 70%);
+      animation:float 22s ease-in-out infinite; pointer-events:none;
+    }
+    @keyframes float{0%,100%{transform:translate(0,0) rotate(0)} 33%{transform:translate(30px,-30px) rotate(120deg)} 66%{transform:translate(-20px,20px) rotate(240deg)}}
+    @media (prefers-reduced-motion: reduce){ .hero::before{animation:none} }
+
+    .logo-tile{
+      background:#fff; border:1px solid var(--line); border-radius:16px;
+      padding:8px 10px; display:inline-flex; align-items:center; justify-content:center;
+      box-shadow:0 10px 24px rgba(0,0,0,.08)
+    }
+    .logo-crisp{height:60px;width:auto}
+    @media (min-width:1024px){ .logo-crisp{height:68px} }
+
+    .tabs{ display:flex; gap:10px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35); border-radius:14px; padding:6px }
+    .tab{ flex:1; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.35); color:#fff; background:transparent; cursor:pointer; font-weight:800 }
+    .tab[aria-selected="true"]{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--primary) }
+
+    .card{ background:#fff; border:1px solid var(--line); border-radius:18px; }
+    .row{ border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+          display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff;
+          transition:transform .2s ease, box-shadow .2s ease }
+    .row:hover{ transform:translateX(4px); box-shadow:0 12px 28px rgba(0,0,0,.06) }
+    .status{font-size:11px; padding:6px 12px; border-radius:999px; border:1px solid transparent; text-transform:uppercase; letter-spacing:.3px}
+    .open{ background:rgba(19,111,58,.1); color:var(--ok); border-color:rgba(19,111,58,.25) }
+    .soon{ background:rgba(186,91,8,.08); color:var(--soon); border-color:rgba(186,91,8,.25) }
+
+    .kbd{ font-variant-numeric:tabular-nums; font-weight:700; padding:.1rem .35rem; border-radius:.4rem; border:1px solid #d1d5db; background:#fff }
+  </style>
+</head>
+<body>
+
+<header class="hero shadow-2xl" id="hero">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="flex items-center justify-between py-6">
+      <div class="flex items-center gap-4">
+        <span class="logo-tile">
+          <img id="brandLogo" src="" alt="School Logo" class="logo-crisp"
+               onerror="this.onerror=null;this.src=window.BRAND.logoFallback"/>
+        </span>
+        <div>
+          <h1 id="brandTitle" class="text-4xl lg:text-5xl font-extrabold tracking-tight" style="font-family:Poppins,Inter,sans-serif"></h1>
+          <p id="brandSubtitle" class="text-sm opacity-90 mt-1"></p>
+        </div>
+      </div>
+      <div class="hidden lg:block"></div>
+    </div>
+
+    <div class="pb-6 flex items-center gap-4">
+      <div class="tabs" role="tablist" aria-label="Course tabs">
+        <button id="tabAB" role="tab" class="tab" aria-selected="true" aria-controls="panelAB"><i class="fas fa-calculator"></i> AP Calc AB</button>
+        <button id="tabBC" role="tab" class="tab" aria-selected="false" aria-controls="panelBC"><i class="fas fa-infinity"></i> AP Calc BC</button>
+      </div>
+      <div class="ml-auto hidden sm:flex items-center gap-4 bg-white/10 backdrop-blur rounded-2xl px-4 py-2">
+        <div class="flex items-center gap-2"><span class="kbd">/</span><span class="text-xs">Search</span></div>
+        <div class="flex items-center gap-2"><span class="kbd">C</span><span class="text-xs">Switch Course</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <section class="card p-5">
+    <label class="block text-sm font-semibold text-slate-700 mb-1" for="q">
+      Search lessons (title, keywords)…
+    </label>
+    <div class="relative">
+      <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <input id="q" type="search" placeholder="e.g., Limits, Derivatives, Riemann sums, Series"
+             class="w-full rounded-xl border border-[--line] pl-10 pr-3 py-2 focus:outline-none focus:border-[--accent]"/>
+    </div>
+    <p class="text-xs text-slate-500 mt-1">
+      Tip: press <span class="kbd">/</span> to focus; <span class="kbd">C</span> to switch course.
+    </p>
+  </section>
+
+  <section id="panelAB" role="tabpanel" aria-labelledby="tabAB" aria-hidden="false" class="mt-8">
+    <div id="ab-units"></div>
+  </section>
+
+  <section id="panelBC" role="tabpanel" aria-labelledby="tabBC" aria-hidden="true" class="mt-8 hidden">
+    <div id="bc-units"></div>
+  </section>
+
+  <footer class="mt-12 mb-8 text-center text-sm text-slate-500">
+    <span id="footerLine"></span>
+  </footer>
+</main>
+
+<script>
+  // --- Apply BRAND ---
+  (function applyBrand(){
+    const b = window.BRAND || {};
+    const c = (b.colors || {});
+    document.title = (b.portalTitle || "AP Calculus Portal");
+
+    // CSS vars
+    const root = document.documentElement.style;
+    root.setProperty('--primary',  c.primary  || '#6C1D45');
+    root.setProperty('--primary2', c.primary2 || '#8B2450');
+    root.setProperty('--accent',   c.accent   || '#C7A34F');
+    root.setProperty('--accent2',  c.accent2  || '#E4D4A8');
+    root.setProperty('--bg',       c.bg       || '#F7FAFC');
+    root.setProperty('--ink',      c.ink      || '#0F172A');
+    root.setProperty('--line',     c.line     || '#e9eef2');
+    root.setProperty('--ok',       c.ok       || '#136f3a');
+    root.setProperty('--soon',     c.soon     || '#8a3d00');
+
+    // Optional banner
+    const hero = document.getElementById('hero');
+    if (b.banner && b.banner.trim()){
+      hero.style.setProperty('--banner', `url('${b.banner}')`);
+    } else {
+      hero.style.setProperty('--banner', 'none');
+    }
+
+    document.getElementById('brandLogo').src = b.logo || '';
+    document.getElementById('brandTitle').textContent = b.portalTitle || 'AP Calculus Portal';
+    document.getElementById('brandSubtitle').textContent = b.subtitle || '';
+    const year = new Date().getFullYear();
+    document.getElementById('footerLine').textContent = (b.footerLine || "© {YEAR}").replace('{YEAR}', year);
+  })();
+
+  // --- Build units/lessons with file existence check ---
+  const $ = (s, el=document) => el.querySelector(s);
+
+  const tabAB = $("#tabAB"), tabBC = $("#tabBC");
+  const panelAB = $("#panelAB"), panelBC = $("#panelBC");
+  const q = $("#q");
+
+  function buildUnits(container, folder, units){
+    container.innerHTML = "";
+    let lessonIndex = 1; // lesson-1 is Welcome in each course
+
+    units.forEach((u, ui) => {
+      const block = document.createElement("div");
+      block.className = "card p-5 mb-5";
+      block.innerHTML = `
+        <div class="flex items-center gap-3 mb-3">
+          <div class="rounded-xl bg-[--primary] text-white w-11 h-11 grid place-items-center shadow">${ui+1}</div>
+          <div>
+            <h3 class="font-bold text-lg">${u.name}</h3>
+            <div class="text-xs text-slate-600">${u.lessons.length} lesson(s)</div>
+          </div>
+        </div>
+        <div class="grid gap-2 md:grid-cols-2 lg:grid-cols-3" id="${folder}-u${ui}"></div>
+      `;
+      container.appendChild(block);
+
+      const list = document.getElementById(`${folder}-u${ui}`);
+
+      u.lessons.forEach((title) => {
+        const href = `${folder}/lesson-${lessonIndex}.html`;
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `<span class="font-semibold">${title}</span><span class="status">Checking…</span>`;
+
+        fetch(href, { method:"HEAD" }).then(r => {
+          const badge = row.querySelector(".status");
+          if (r.ok){
+            badge.className = "status open"; badge.textContent = "Open";
+            row.style.cursor = "pointer";
+            row.addEventListener("click", () => location.href = href);
+          } else {
+            badge.className = "status soon"; badge.textContent = "Coming soon";
+            row.classList.add("opacity-80");
+          }
+        }).catch(() => {
+          const badge = row.querySelector(".status");
+          badge.className = "status soon"; badge.textContent = "Coming soon";
+          row.classList.add("opacity-80");
+        });
+
+        list.appendChild(row);
+        lessonIndex++;
+      });
+    });
+  }
+
+  function activate(which){
+    const isAB = which === "AB";
+    tabAB.setAttribute("aria-selected", isAB ? "true" : "false");
+    tabBC.setAttribute("aria-selected", isAB ? "false" : "true");
+    panelAB.classList.toggle("hidden", !isAB);
+    panelBC.classList.toggle("hidden", isAB);
+    panelAB.setAttribute("aria-hidden", isAB ? "false" : "true");
+    panelBC.setAttribute("aria-hidden", isAB ? "true" : "false");
+    q.value = ""; filter("");
+    localStorage.setItem("apcalc_course", which);
+  }
+
+  function filter(text){
+    const panel = panelAB.getAttribute("aria-hidden")==="false" ? panelAB : panelBC;
+    const rows = panel.querySelectorAll(".row");
+    const t = (text || "").toLowerCase();
+    rows.forEach(r => r.style.display = r.textContent.toLowerCase().includes(t) ? "" : "none");
+    panel.querySelectorAll(".card").forEach(c => {
+      const any = [...c.querySelectorAll(".row")].some(x => x.style.display !== "none");
+      c.style.display = any ? "" : "none";
+    });
+  }
+
+  tabAB.addEventListener("click", () => activate("AB"));
+  tabBC.addEventListener("click", () => activate("BC"));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/"){ e.preventDefault(); q.focus(); }
+    if (e.key.toLowerCase() === "c"){ activate(tabAB.getAttribute("aria-selected")==="true" ? "BC" : "AB"); }
+  });
+  q.addEventListener("input", e => filter(e.target.value));
+
+  // Render
+  buildUnits($("#ab-units"), "ab", window.APCALC.AB);
+  buildUnits($("#bc-units"), "bc", window.APCALC.BC);
+  activate(localStorage.getItem("apcalc_course") || "AB");
+</script>
+
+</body>
+</html>
